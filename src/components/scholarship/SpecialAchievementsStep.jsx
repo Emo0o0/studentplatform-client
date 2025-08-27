@@ -14,8 +14,8 @@ export default function SpecialAchievementsStep({ formData, onChange }) {
             multiline
             rows={4}
             label="Опишете постижението"
-            value={formData.achievementDescription || ""}
-            onChange={(e) => onChange({ ...formData, achievementDescription: e.target.value })}
+            value={formData.achievementTopic || ""}
+            onChange={(e) => onChange({ ...formData, achievementTopic: e.target.value })}
             helperText="Опишете научното/спортното/културното постижение"
           />
         </Grid>

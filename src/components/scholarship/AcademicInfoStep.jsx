@@ -1,33 +1,13 @@
 import React from "react";
 import { Grid, Paper, TextField, Typography, Box, FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-
-const facultyOptions = [
-  { id: "MT", label: "Машинно-технологичен факултет" },
-  { id: "E", label: "Електротехнически факултет" },
-  { id: "SHB", label: "Корабостроителен факултет" },
-  { id: "FCSA", label: "Факултет по изчислителна техника и автоматизация" },
-  //   { id: "SI", label: "Добруджански технологичен колеж" },
-  //   { id: "SI", label: "Колеж в структурата на ТУ-Варна" },
-  // Add other faculties as needed
-];
-
-const degreeLevels = [
-  { id: "BACHELOR", label: "Бакалавър" },
-  { id: "MASTER", label: "Магистър" },
-  { id: "DOCTORAL", label: "Докторант" },
-];
-
-const courseYears = [
-  { id: "FIRST", label: "Първи" },
-  { id: "SECOND", label: "Втори" },
-  { id: "THIRD", label: "Трети" },
-  { id: "FOURTH", label: "Четвърти" },
-];
-
-const semesters = [
-  { id: "WINTER", label: "Зимен" },
-  { id: "SUMMER", label: "Летен" },
-];
+import {
+  FACULTY_OPTIONS,
+  DEGREE_LEVELS,
+  COURSE_YEARS,
+  SEMESTERS,
+  GROUP_OPTIONS,
+  SUBGROUP_OPTIONS,
+} from "../../constants/dropdownOptions";
 
 export default function AcademicInfoStep({ formData = {}, onChange }) {
   const handleChange = (field, value) => {
@@ -69,8 +49,8 @@ export default function AcademicInfoStep({ formData = {}, onChange }) {
                     },
                   }}
                 >
-                  {facultyOptions.map((option) => (
-                    <MenuItem key={option.id} value={option.label}>
+                  {FACULTY_OPTIONS.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
                       {option.label}
                     </MenuItem>
                   ))}
@@ -100,8 +80,8 @@ export default function AcademicInfoStep({ formData = {}, onChange }) {
                   label="Образователна степен"
                   onChange={(e) => handleChange("degreeLevel", e.target.value)}
                 >
-                  {degreeLevels.map((level) => (
-                    <MenuItem key={level.id} value={level.label}>
+                  {DEGREE_LEVELS.map((level) => (
+                    <MenuItem key={level.id} value={level.id}>
                       {level.label}
                     </MenuItem>
                   ))}
@@ -122,8 +102,8 @@ export default function AcademicInfoStep({ formData = {}, onChange }) {
                   label="Курс"
                   onChange={(e) => handleChange("courseYear", e.target.value)}
                 >
-                  {courseYears.map((year) => (
-                    <MenuItem key={year.id} value={year.label}>
+                  {COURSE_YEARS.map((year) => (
+                    <MenuItem key={year.id} value={year.id}>
                       {year.label}
                     </MenuItem>
                   ))}
@@ -138,8 +118,8 @@ export default function AcademicInfoStep({ formData = {}, onChange }) {
                   label="Семестър"
                   onChange={(e) => handleChange("semester", e.target.value)}
                 >
-                  {semesters.map((semester) => (
-                    <MenuItem key={semester.id} value={semester.label}>
+                  {SEMESTERS.map((semester) => (
+                    <MenuItem key={semester.id} value={semester.id}>
                       {semester.label}
                     </MenuItem>
                   ))}
@@ -153,20 +133,36 @@ export default function AcademicInfoStep({ formData = {}, onChange }) {
         <Grid item xs={12}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Група"
-                value={formData.group || ""}
-                onChange={(e) => handleChange("group", e.target.value)}
-              />
+              <FormControl fullWidth sx={{ minWidth: 90 }}>
+                <InputLabel>Група</InputLabel>
+                <Select
+                  value={formData.studentGroup || ""}
+                  label="Група"
+                  onChange={(e) => handleChange("studentGroup", e.target.value)}
+                >
+                  {GROUP_OPTIONS.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Подгрупа"
-                value={formData.stream || ""}
-                onChange={(e) => handleChange("stream", e.target.value)}
-              />
+              <FormControl fullWidth sx={{ minWidth: 90 }}>
+                <InputLabel>Подгрупа</InputLabel>
+                <Select
+                  value={formData.subGroup || ""}
+                  label="Подгрупа"
+                  onChange={(e) => handleChange("subGroup", e.target.value)}
+                >
+                  {SUBGROUP_OPTIONS.map((subgroup) => (
+                    <MenuItem key={subgroup.id} value={subgroup.id}>
+                      {subgroup.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
         </Grid>

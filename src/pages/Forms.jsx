@@ -41,6 +41,7 @@ function Forms() {
     scholarshipType: "",
     personalInfo: {},
     specificInfo: {},
+    incomeInfo: {},
     bankInfo: {},
     documents: [],
   });
@@ -94,17 +95,17 @@ function Forms() {
       case "MERIT_SUCCESS":
         return [...baseSteps, "Успех", "Банкова информация", "Документи", "Преглед"];
       case "MERIT_WITH_INCOME":
-        return [...baseSteps, "Успех и доходи", "Банкова информация", "Документи", "Преглед"];
+        return [...baseSteps, "Успех", "Доходи", "Банкова информация", "Документи", "Преглед"];
       case "SOCIAL_PREFERENTIAL":
-        return [...baseSteps, "Социално основание", "Банкова информация", "Документи", "Преглед"];
+        return [...baseSteps, "Успех", "Социално основание", "Банкова информация", "Документи", "Преглед"];
       case "FIRST_YEAR":
         return [...baseSteps, "Кандидатстудентски изпити", "Банкова информация", "Документи", "Преглед"];
       case "SPECIAL_ACHIEVEMENTS":
-        return [...baseSteps, "Постижения", "Банкова информация", "Документи", "Преглед"];
+        return [...baseSteps, "Успех", "Постижения", "Банкова информация", "Документи", "Преглед"];
       case "FOREIGN_STUDENT":
-        return [...baseSteps, "Произход", "Банкова информация", "Документи", "Преглед"];
+        return [...baseSteps, "Успех", "Банкова информация", "Документи", "Преглед"];
       default:
-        return [...baseSteps, "Банкова информация", "Документи", "Преглед"];
+        return [...baseSteps, "Успех", "Банкова информация", "Документи", "Преглед"];
     }
   };
 
@@ -141,7 +142,7 @@ function Forms() {
         setSnackbarOpen(true);
 
         // Optional: redirect or reset form
-        // history.push('/dashboard');
+        // history.push("/dashboard");
         // or
         // resetForm();
       } else {
@@ -195,11 +196,14 @@ function Forms() {
             onChange={(data) => setFormData({ ...formData, specificInfo: data })}
           />
         );
-      case "Успех и доходи":
+      case "Доходи":
         return (
           <MeritIncomeStep
-            formData={formData.specificInfo}
-            onChange={(data) => setFormData({ ...formData, specificInfo: data })}
+            formData={formData} // Pass the entire formData object
+            onChange={(updatedFormData) => {
+              console.log("MeritIncomeStep onChange called with:", updatedFormData);
+              setFormData(updatedFormData);
+            }}
           />
         );
       case "Социално основание":

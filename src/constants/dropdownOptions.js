@@ -275,9 +275,11 @@ export const BANK_OPTIONS = [
 ];
 
 export const DIRECTION_OPTIONS = [
-  { id: "TECHNICAL_SCIENCES", label: "Технически науки" },
-  { id: "NATURAL_SCIENCES", label: "Природни науки" },
-  { id: "SOCIAL_SCIENCES", label: "Социални науки" },
+  { id: "MECHANICAL_ENGINEERING", label: "Машинно инженерство" },
+  { id: "ELECTRICAL_ELECTRONICS", label: "Електротехника, електроника и автоматика" },
+  { id: "ENERGY", label: "Енергетика" },
+  { id: "TRANSPORT_NAVAL", label: "Транспорт, корабоплаване и авиация" },
+  { id: "GENERAL_ENGINEERING", label: "Общо инженерство" },
 ];
 
 export const SUBJECT_OPTIONS = [
@@ -293,19 +295,25 @@ export const SUBJECT_OPTIONS = [
 export const DEGREE_LEVELS = [
   { id: "BACHELOR", label: "Бакалавър" },
   { id: "MASTER", label: "Магистър" },
-  { id: "DOCTORAL", label: "Докторант" },
+  { id: "PROFESSIONAL_BACHELOR", label: "Професионален Бакалавър" },
 ];
 
 export const COURSE_YEARS = [
+  { id: "I", label: "Първи" },
+  { id: "II", label: "Втори" },
+  { id: "III", label: "Трети" },
+  { id: "IV", label: "Четвърти" },
+];
+
+export const SEMESTERS = [
   { id: "FIRST", label: "Първи" },
   { id: "SECOND", label: "Втори" },
   { id: "THIRD", label: "Трети" },
   { id: "FOURTH", label: "Четвърти" },
-];
-
-export const SEMESTERS = [
-  { id: "WINTER", label: "Зимен" },
-  { id: "SUMMER", label: "Летен" },
+  { id: "FIFTH", label: "Пети" },
+  { id: "SIXTH", label: "Шести" },
+  { id: "SEVENTH", label: "Седми" },
+  { id: "EIGHTH", label: "Осми" },
 ];
 
 export const FAMILY_STATUSES = [
@@ -367,11 +375,29 @@ export const SOCIAL_TYPES = [
   },
 ];
 
-// Add more dropdown options as needed
+export const FACULTY_OPTIONS = [
+  { id: "MECHANICAL_TECHNOLOGICAL", label: "Машинно-технологичен факултет" },
+  { id: "ELECTRICAL", label: "Електротехнически факултет" },
+  { id: "SHIPBUILDING", label: "Корабостроителен факултет" },
+  { id: "COMPUTER_AUTOMATION", label: "Факултет по изчислителна техника и автоматизация" },
+  //   { id: "SI", label: "Добруджански технологичен колеж" },
+  //   { id: "SI", label: "Колеж в структурата на ТУ-Варна" },
+  // Add other faculties as needed
+];
 
-/**
- * Helper functions to get display values from IDs
- */
+export const GROUP_OPTIONS = [
+  { id: "1", label: "1" },
+  { id: "2", label: "2" },
+  { id: "3", label: "3" },
+  { id: "4", label: "4" },
+  { id: "5", label: "5" },
+];
+
+export const SUBGROUP_OPTIONS = [
+  { id: "a", label: "а" },
+  { id: "b", label: "б" },
+];
+
 export const getDisplayValue = (optionsArray, id) => {
   if (!id) return "—";
   const found = optionsArray.find((item) => item.id === id);
@@ -388,3 +414,4 @@ export const getFamilyStatusName = (id) => getDisplayValue(FAMILY_STATUSES, id);
 export const getScholarshipName = (id) => getDisplayValue(SCHOLARSHIP_OPTIONS, id);
 export const getSocialTypeName = (id) => getDisplayValue(SOCIAL_TYPES, id);
 export const getCountryName = (id) => getDisplayValue(COUNTRY_CODES, id);
+export const getFacultyName = (id) => getDisplayValue(FACULTY_OPTIONS, id);

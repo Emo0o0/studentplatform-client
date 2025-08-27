@@ -10,13 +10,14 @@ export default function MeritSuccessStep({ formData, onChange }) {
       <Grid container spacing={2}>
         <Grid item xs={12}>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            Изисква се успех от 5.00 до 6.00
+            Среден успех от предходните 2 семестъра
           </Typography>
         </Grid>
         <Grid item xs={12}>
           <TextField
+            sx={{ minWidth: 120 }}
             fullWidth
-            label="Среден успех от предходен семестър"
+            label="Успех"
             type="number"
             inputProps={{
               min: "5.00",

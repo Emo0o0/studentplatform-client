@@ -1,6 +1,18 @@
 import React from "react";
 import { Typography, Grid, Paper, Box, Divider } from "@mui/material";
-import { getBankName, getDirectionName, getSubjectName } from "../../constants/dropdownOptions";
+import {
+  getBankName,
+  getDirectionName,
+  getSubjectName,
+  getDegreeLevelName,
+  getCourseYearName,
+  getSemesterName,
+  getFamilyStatusName,
+  getScholarshipName,
+  getSocialTypeName,
+  getCountryName,
+  getFacultyName,
+} from "../../constants/dropdownOptions";
 
 export default function ReviewStep({ formData }) {
   const renderPersonalInfo = () => (
@@ -70,7 +82,7 @@ export default function ReviewStep({ formData }) {
           <Typography variant="body2" color="text.secondary">
             Факултет
           </Typography>
-          <Typography>{formData.academicInfo?.faculty}</Typography>
+          <Typography>{getFacultyName(formData.academicInfo?.faculty)}</Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography variant="body2" color="text.secondary">
@@ -82,19 +94,19 @@ export default function ReviewStep({ formData }) {
           <Typography variant="body2" color="text.secondary">
             Образователна степен
           </Typography>
-          <Typography>{formData.academicInfo?.degreeLevel}</Typography>
+          <Typography>{getDegreeLevelName(formData.academicInfo?.degreeLevel)}</Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography variant="body2" color="text.secondary">
             Курс
           </Typography>
-          <Typography>{formData.academicInfo?.courseYear}</Typography>
+          <Typography>{getCourseYearName(formData.academicInfo?.courseYear)}</Typography>
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography variant="body2" color="text.secondary">
             Семестър
           </Typography>
-          <Typography>{formData.academicInfo?.semester}</Typography>
+          <Typography>{getSemesterName(formData.academicInfo?.semester)}</Typography>
         </Grid>
       </Grid>
     </Box>
@@ -143,7 +155,7 @@ export default function ReviewStep({ formData }) {
         return (
           <Box sx={{ mt: 3 }}>
             <Typography variant="subtitle1" color="primary" gutterBottom>
-              Успех и доходи
+              Семейно положение
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -163,16 +175,18 @@ export default function ReviewStep({ formData }) {
                       {formData.specificInfo.spouseName} - {formData.specificInfo.spouseEmploymentStatus}
                     </Typography>
                   </Grid>
-                  {formData.specificInfo.children?.length > 0 && (
-                    <Grid item xs={12}>
+                  {formData.specificInfo?.familyStatus === "MARRIED" && (
+                    <Grid item xs={12} sm={6}>
                       <Typography variant="body2" color="text.secondary">
                         Деца
                       </Typography>
-                      {formData.specificInfo.children.map((child, index) => (
-                        <Typography key={index}>
-                          {child.fullName} - {child.birthDate}
-                        </Typography>
-                      ))}
+                      <Typography>
+                        {Array.isArray(formData.incomeInfo?.children) && formData.incomeInfo.children.length > 0
+                          ? `${formData.incomeInfo.children.length} ${
+                              formData.incomeInfo.children.length === 1 ? "дете" : "деца"
+                            }`
+                          : "Няма деца"}
+                      </Typography>
                     </Grid>
                   )}
                 </>
@@ -182,34 +196,48 @@ export default function ReviewStep({ formData }) {
                     <Typography variant="body2" color="text.secondary">
                       Баща
                     </Typography>
-                    <Typography>{formData.specificInfo.fatherName}</Typography>
+                    <Typography>{formData.incomeInfo.fatherName}</Typography>
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <Typography variant="body2" color="text.secondary">
                       Майка
                     </Typography>
-                    <Typography>{formData.specificInfo.motherName}</Typography>
+                    <Typography>{formData.incomeInfo.motherName}</Typography>
                   </Grid>
-                  {formData.specificInfo.siblings?.length > 0 && (
-                    <Grid item xs={12}>
+                  {formData.specificInfo?.familyStatus === "SINGLE" && (
+                    <Grid item xs={12} sm={6}>
                       <Typography variant="body2" color="text.secondary">
                         Братя/Сестри
                       </Typography>
-                      {formData.specificInfo.siblings.map((sibling, index) => (
-                        <Typography key={index}>
-                          {sibling.fullName} - {sibling.educationStatus}
-                        </Typography>
-                      ))}
+                      <Typography>
+                        {Array.isArray(formData.incomeInfo?.siblings) && formData.incomeInfo.siblings.length > 0
+                          ? `${formData.incomeInfo.siblings.length} ${
+                              formData.incomeInfo.siblings.length === 1 ? "брат/сестра" : "братя/сестри"
+                            }`
+                          : "Няма братя/сестри"}
+                      </Typography>
                     </Grid>
                   )}
                 </>
               )}
+            </Grid>
+          </Box>
+        );
 
+      case "SPECIAL_ACHIEVEMENTS":
+        return (
+          <Box sx={{ mt: 3 }}>
+            <Typography variant="subtitle1" color="primary" gutterBottom>
+              Специални постижения
+            </Typography>
+            <Grid container spacing={2}>
               <Grid item xs={12}>
                 <Typography variant="body2" color="text.secondary">
-                  Общ доход
+                  Описание на постижението
                 </Typography>
-                <Typography>{formData.specificInfo.totalIncome} лв.</Typography>
+                <Typography sx={{ whiteSpace: "pre-wrap" }}>
+                  {formData.specificInfo?.achievementDescription || "—"}
+                </Typography>
               </Grid>
             </Grid>
           </Box>
@@ -226,38 +254,13 @@ export default function ReviewStep({ formData }) {
                 <Typography variant="body2" color="text.secondary">
                   Държава на произход
                 </Typography>
-                <Typography>{formData.specificInfo.countryOfOrigin || "—"}</Typography>
+                <Typography>{getCountryName(formData.specificInfo.countryOfOrigin) || "—"}</Typography>
               </Grid>
             </Grid>
           </Box>
         );
 
       case "FIRST_YEAR":
-        // Get the human-readable labels for direction and subject
-        const getDirectionLabel = (id) => {
-          const directions = [
-            { id: "TECHNICAL_SCIENCES", label: "Технически науки" },
-            { id: "NATURAL_SCIENCES", label: "Природни науки" },
-            { id: "SOCIAL_SCIENCES", label: "Социални науки" },
-          ];
-          const direction = directions.find((d) => d.id === id);
-          return direction ? direction.label : id;
-        };
-
-        const getSubjectLabel = (id) => {
-          const subjects = [
-            { id: "MATHEMATICS", label: "Математика" },
-            { id: "PHYSICS", label: "Физика" },
-            { id: "CHEMISTRY", label: "Химия" },
-            { id: "BIOLOGY", label: "Биология" },
-            { id: "HISTORY", label: "История" },
-            { id: "GEOGRAPHY", label: "География" },
-            { id: "FOREIGN_LANGUAGE", label: "Чужд език" },
-          ];
-          const subject = subjects.find((s) => s.id === id);
-          return subject ? subject.label : id;
-        };
-
         return (
           <Box sx={{ mt: 3 }}>
             <Typography variant="subtitle1" color="primary" gutterBottom>

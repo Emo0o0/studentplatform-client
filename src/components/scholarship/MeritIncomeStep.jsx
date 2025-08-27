@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Paper,
   Typography,
@@ -14,14 +14,8 @@ import {
   Box,
 } from "@mui/material";
 import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import { FAMILY_STATUSES } from "../../constants/dropdownOptions";
 
-// Match FamilyStatus.java enum
-const familyStatuses = [
-  { id: "MARRIED", label: "Семейни" },
-  { id: "SINGLE", label: "Несемейни" },
-];
-
-// Match all fields from FamilyIncomeInfo.java
 const incomeFields = [
   { id: "salaries", label: "Заплати" },
   { id: "pensions", label: "Пенсии" },
@@ -38,46 +32,100 @@ const incomeFields = [
 ];
 
 export default function MeritIncomeStep({ formData, onChange }) {
-  const handleChange = (field, value) => {
+  // Initialize formData.specificInfo and formData.incomeInfo if they don't exist
+  useEffect(() => {
+    if (!formData.specificInfo || !formData.incomeInfo) {
+      onChange({
+        ...formData,
+        specificInfo: formData.specificInfo || {},
+        incomeInfo: formData.incomeInfo || {},
+      });
+    }
+  }, []);
+
+  // Handle changes to specificInfo fields
+  const handleSpecificInfoChange = (field, value) => {
     onChange({
       ...formData,
-      [field]: value,
+      specificInfo: {
+        ...formData.specificInfo,
+        [field]: value,
+      },
     });
   };
 
-  // Children handlers (from Child.java)
+  // Handle changes to incomeInfo fields
+  const handleIncomeInfoChange = (field, value) => {
+    onChange({
+      ...formData,
+      incomeInfo: {
+        ...formData.incomeInfo,
+        [field]: value,
+      },
+    });
+  };
+
+  // Children handlers
   const addChild = () => {
-    const children = [...(formData.children || [])];
+    const children = [...(formData.incomeInfo?.children || [])];
     children.push({ fullName: "", birthDate: "" });
-    handleChange("children", children);
+    handleIncomeInfoChange("children", children);
   };
 
   const removeChild = (index) => {
-    const children = [...(formData.children || [])];
+    const children = [...(formData.incomeInfo?.children || [])];
     children.splice(index, 1);
-    handleChange("children", children);
+    handleIncomeInfoChange("children", children);
   };
 
-  // Siblings handlers (from Sibling.java)
+  // Siblings handlers
   const addSibling = () => {
-    const siblings = [...(formData.siblings || [])];
+    const siblings = [...(formData.incomeInfo?.siblings || [])];
     siblings.push({ fullName: "", educationStatus: "" });
-    handleChange("siblings", siblings);
+    handleIncomeInfoChange("siblings", siblings);
   };
 
   const removeSibling = (index) => {
-    const siblings = [...(formData.siblings || [])];
+    const siblings = [...(formData.incomeInfo?.siblings || [])];
     siblings.splice(index, 1);
-    handleChange("siblings", siblings);
+    handleIncomeInfoChange("siblings", siblings);
   };
 
   // Calculate totals for FamilyIncomeInfo
   const totalIncome = useMemo(() => {
-    return incomeFields.reduce((sum, field) => {
-      const value = parseFloat(formData[field.id]) || 0;
-      return Math.round((sum + value) * 100) / 100;
-    }, 0);
-  }, [formData]);
+    let sum = 0;
+    incomeFields.forEach((field) => {
+      const value = parseFloat(formData.incomeInfo?.[field.id]) || 0;
+      sum += value;
+    });
+    return Math.round(sum * 100) / 100;
+  }, [formData.incomeInfo]);
+
+  // Calculate family member count
+  const getFamilyMemberCount = () => {
+    let count = 1; // The student
+
+    if (formData.specificInfo?.familyStatus === "MARRIED") {
+      count += 1; // Spouse
+      count += (formData.incomeInfo?.children || []).length; // Children
+    } else if (formData.specificInfo?.familyStatus === "SINGLE") {
+      if (formData.incomeInfo?.fatherName) count += 1; // Father
+      if (formData.incomeInfo?.motherName) count += 1; // Mother
+      count += (formData.incomeInfo?.siblings || []).length; // Siblings
+    }
+
+    return count;
+  };
+
+  // Update calculated values when income changes
+  useEffect(() => {
+    const memberCount = getFamilyMemberCount();
+    const monthlyPerMember = memberCount > 0 ? Math.round((totalIncome / memberCount) * 100) / 100 : 0;
+
+    handleSpecificInfoChange("totalIncome", totalIncome.toString());
+    handleSpecificInfoChange("monthlyIncome", monthlyPerMember.toString());
+    handleSpecificInfoChange("familyMemberCount", memberCount.toString());
+  }, [totalIncome, formData.incomeInfo?.children, formData.incomeInfo?.siblings]);
 
   return (
     <Paper sx={{ p: 3 }}>
@@ -95,11 +143,11 @@ export default function MeritIncomeStep({ formData, onChange }) {
             <FormControl fullWidth size="medium">
               <InputLabel>Семейно положение</InputLabel>
               <Select
-                value={formData.familyStatus || ""}
-                onChange={(e) => handleChange("familyStatus", e.target.value)}
+                value={formData.specificInfo?.familyStatus || ""}
+                onChange={(e) => handleSpecificInfoChange("familyStatus", e.target.value)}
                 label="Семейно положение"
               >
-                {familyStatuses.map((status) => (
+                {FAMILY_STATUSES.map((status) => (
                   <MenuItem key={status.id} value={status.id}>
                     {status.label}
                   </MenuItem>
@@ -110,7 +158,7 @@ export default function MeritIncomeStep({ formData, onChange }) {
         </Grid>
 
         {/* Married Family Section */}
-        {formData.familyStatus === "MARRIED" && (
+        {formData.specificInfo?.familyStatus === "MARRIED" && (
           <Grid item xs={12}>
             <Box>
               <Typography variant="subtitle1" gutterBottom color="primary">
@@ -121,16 +169,16 @@ export default function MeritIncomeStep({ formData, onChange }) {
                   <TextField
                     fullWidth
                     label="Име на съпруг/а"
-                    value={formData.spouseName || ""}
-                    onChange={(e) => handleChange("spouseName", e.target.value)}
+                    value={formData.incomeInfo?.spouseName || ""}
+                    onChange={(e) => handleIncomeInfoChange("spouseName", e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Трудов статус на съпруг/а"
-                    value={formData.spouseEmploymentStatus || ""}
-                    onChange={(e) => handleChange("spouseEmploymentStatus", e.target.value)}
+                    value={formData.incomeInfo?.spouseEmploymentStatus || ""}
+                    onChange={(e) => handleIncomeInfoChange("spouseEmploymentStatus", e.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -143,13 +191,13 @@ export default function MeritIncomeStep({ formData, onChange }) {
                   </Button>
                 </Box>
                 <Box sx={{ width: "100%" }}>
-                  {(formData.children || []).length === 0 ? (
+                  {(formData.incomeInfo?.children || []).length === 0 ? (
                     <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
                       Няма добавени деца
                     </Typography>
                   ) : (
                     <Grid container spacing={2}>
-                      {(formData.children || []).map((child, index) => (
+                      {(formData.incomeInfo?.children || []).map((child, index) => (
                         <Grid item xs={12} key={index}>
                           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                             <TextField
@@ -157,9 +205,9 @@ export default function MeritIncomeStep({ formData, onChange }) {
                               label="Име на детето"
                               value={child.fullName || ""}
                               onChange={(e) => {
-                                const children = [...formData.children];
+                                const children = [...(formData.incomeInfo?.children || [])];
                                 children[index] = { ...children[index], fullName: e.target.value };
-                                handleChange("children", children);
+                                handleIncomeInfoChange("children", children);
                               }}
                             />
                             <TextField
@@ -169,9 +217,9 @@ export default function MeritIncomeStep({ formData, onChange }) {
                               InputLabelProps={{ shrink: true }}
                               value={child.birthDate || ""}
                               onChange={(e) => {
-                                const children = [...formData.children];
+                                const children = [...(formData.incomeInfo?.children || [])];
                                 children[index] = { ...children[index], birthDate: e.target.value };
-                                handleChange("children", children);
+                                handleIncomeInfoChange("children", children);
                               }}
                             />
                             <IconButton onClick={() => removeChild(index)} color="error" size="small">
@@ -189,7 +237,7 @@ export default function MeritIncomeStep({ formData, onChange }) {
         )}
 
         {/* Single Family Section */}
-        {formData.familyStatus === "SINGLE" && (
+        {formData.specificInfo?.familyStatus === "SINGLE" && (
           <Grid item xs={12}>
             <Box>
               <Typography variant="subtitle1" gutterBottom color="primary">
@@ -200,16 +248,32 @@ export default function MeritIncomeStep({ formData, onChange }) {
                   <TextField
                     fullWidth
                     label="Име на баща"
-                    value={formData.fatherName || ""}
-                    onChange={(e) => handleChange("fatherName", e.target.value)}
+                    value={formData.incomeInfo?.fatherName || ""}
+                    onChange={(e) => handleIncomeInfoChange("fatherName", e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Статус на баща"
+                    value={formData.incomeInfo?.fatherStatus || ""}
+                    onChange={(e) => handleIncomeInfoChange("fatherStatus", e.target.value)}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
                     label="Име на майка"
-                    value={formData.motherName || ""}
-                    onChange={(e) => handleChange("motherName", e.target.value)}
+                    value={formData.incomeInfo?.motherName || ""}
+                    onChange={(e) => handleIncomeInfoChange("motherName", e.target.value)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Статус на майка"
+                    value={formData.incomeInfo?.motherStatus || ""}
+                    onChange={(e) => handleIncomeInfoChange("motherStatus", e.target.value)}
                   />
                 </Grid>
               </Grid>
@@ -222,13 +286,13 @@ export default function MeritIncomeStep({ formData, onChange }) {
                   </Button>
                 </Box>
                 <Box sx={{ width: "100%" }}>
-                  {(formData.siblings || []).length === 0 ? (
+                  {(formData.incomeInfo?.siblings || []).length === 0 ? (
                     <Typography variant="body2" color="text.secondary" sx={{ py: 2 }}>
                       Няма добавени братя/сестри
                     </Typography>
                   ) : (
                     <Grid container spacing={2}>
-                      {(formData.siblings || []).map((sibling, index) => (
+                      {(formData.incomeInfo?.siblings || []).map((sibling, index) => (
                         <Grid item xs={12} key={index}>
                           <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                             <TextField
@@ -236,9 +300,9 @@ export default function MeritIncomeStep({ formData, onChange }) {
                               label="Име"
                               value={sibling.fullName || ""}
                               onChange={(e) => {
-                                const siblings = [...formData.siblings];
+                                const siblings = [...(formData.incomeInfo?.siblings || [])];
                                 siblings[index] = { ...siblings[index], fullName: e.target.value };
-                                handleChange("siblings", siblings);
+                                handleIncomeInfoChange("siblings", siblings);
                               }}
                             />
                             <TextField
@@ -246,9 +310,9 @@ export default function MeritIncomeStep({ formData, onChange }) {
                               label="Учебно заведение"
                               value={sibling.educationStatus || ""}
                               onChange={(e) => {
-                                const siblings = [...formData.siblings];
+                                const siblings = [...(formData.incomeInfo?.siblings || [])];
                                 siblings[index] = { ...siblings[index], educationStatus: e.target.value };
-                                handleChange("siblings", siblings);
+                                handleIncomeInfoChange("siblings", siblings);
                               }}
                             />
                             <IconButton onClick={() => removeSibling(index)} color="error" size="small">
@@ -280,22 +344,12 @@ export default function MeritIncomeStep({ formData, onChange }) {
                       label={field.label}
                       type="number"
                       inputProps={{ min: 0, step: "0.01" }}
-                      value={formData[field.id] || ""}
-                      onChange={(e) => handleChange(field.id, e.target.value)}
+                      value={formData.incomeInfo?.[field.id] || ""}
+                      onChange={(e) => handleIncomeInfoChange(field.id, e.target.value)}
                     />
                   </Grid>
                 ))}
               </Grid>
-
-              <Box sx={{ mt: 2 }}>
-                <TextField
-                  fullWidth
-                  label="Общ доход"
-                  type="number"
-                  value={totalIncome}
-                  InputProps={{ readOnly: true }}
-                />
-              </Box>
             </Box>
           </Box>
         </Grid>

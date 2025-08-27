@@ -1,8 +1,71 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Grid, TextField, Typography, Box, Paper, Divider } from "@mui/material";
 
 export default function PersonalInfoStep({ formData = {}, onChange }) {
+  // State to track validation errors
+  const [errors, setErrors] = useState({
+    streetNumber: "",
+    floor: "",
+    apartment: "",
+    egn: "",
+    phone: "",
+  });
+
+  const validateNumber = (value, fieldName) => {
+    if (value === "") return ""; // Empty is allowed for optional fields
+
+    // Check if the input is a valid number
+    if (!/^\d+$/.test(value)) {
+      return "Трябва да е число";
+    }
+    return "";
+  };
+
+  const validateEGN = (value) => {
+    if (!value) return "ЕГН е задължително";
+    if (!/^\d{10}$/.test(value)) {
+      return "ЕГН трябва да е точно 10 цифри";
+    }
+    return "";
+  };
+
+  const validatePhone = (value) => {
+    if (!value) return "Телефон е задължителен";
+    if (!/^\d{10}$/.test(value)) {
+      return "Телефонът трябва да съдържа 10 цифри";
+    }
+    return "";
+  };
+
   const handleChange = (field, value) => {
+    let errorMessage = "";
+
+    // Validate based on field type
+    switch (field) {
+      case "streetNumber":
+        errorMessage = validateNumber(value, "streetNumber");
+        break;
+      case "floor":
+        errorMessage = validateNumber(value, "floor");
+        break;
+      case "apartment":
+        errorMessage = validateNumber(value, "apartment");
+        break;
+      case "egn":
+        errorMessage = validateEGN(value);
+        break;
+      case "phone":
+        errorMessage = validatePhone(value);
+        break;
+    }
+
+    // Update errors
+    setErrors((prev) => ({
+      ...prev,
+      [field]: errorMessage,
+    }));
+
+    // Update form data
     onChange({ ...formData, [field]: value });
   };
 
@@ -61,6 +124,9 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="ЕГН"
                 value={formData.egn || ""}
                 onChange={(e) => handleChange("egn", e.target.value)}
+                error={!!errors.egn}
+                helperText={errors.egn}
+                inputProps={{ maxLength: 10 }}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -80,6 +146,9 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Телефон"
                 value={formData.phone || ""}
                 onChange={(e) => handleChange("phone", e.target.value)}
+                error={!!errors.phone}
+                helperText={errors.phone}
+                inputProps={{ maxLength: 10 }}
               />
             </Grid>
           </Grid>
@@ -116,6 +185,10 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Номер"
                 value={formData.streetNumber || ""}
                 onChange={(e) => handleChange("streetNumber", e.target.value)}
+                error={!!errors.streetNumber}
+                helperText={errors.streetNumber}
+                // Optionally restrict input to numbers only
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -132,6 +205,9 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Етаж"
                 value={formData.floor || ""}
                 onChange={(e) => handleChange("floor", e.target.value)}
+                error={!!errors.floor}
+                helperText={errors.floor}
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -140,6 +216,9 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Апартамент"
                 value={formData.apartment || ""}
                 onChange={(e) => handleChange("apartment", e.target.value)}
+                error={!!errors.apartment}
+                helperText={errors.apartment}
+                inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
               />
             </Grid>
           </Grid>
