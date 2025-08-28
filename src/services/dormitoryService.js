@@ -18,13 +18,22 @@ export const keepDormitoryRoom = async (data) => {
       }),
     });
 
-    const responseData = await response.json();
+    // Handle both success and error cases with a single response reading
+    let responseData;
+    try {
+      responseData = await response.json();
+    } catch (e) {
+      responseData = { message: await response.text() };
+    }
 
     if (!response.ok) {
       throw new Error(responseData.message || `Error ${response.status}: ${response.statusText}`);
     }
 
-    return responseData;
+    return {
+      formId: responseData.formId,
+      ...responseData,
+    };
   } catch (error) {
     console.error("Error submitting keep room request:", error);
     throw error;

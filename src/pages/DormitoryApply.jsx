@@ -32,6 +32,8 @@ import { DEGREE_LEVELS } from "../constants/dropdownOptions";
 function DormitoryApply() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Get data from location state if available
   const keepRoomFormId = location.state?.keepRoomFormId || null;
   const keepRoomData = location.state?.keepRoomData || null;
 
@@ -42,8 +44,10 @@ function DormitoryApply() {
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState("");
   const [maxVisitedStep, setMaxVisitedStep] = useState(0);
+  const [wantsToKeepRoom, setWantsToKeepRoom] = useState(false);
   const [noOwnHousing, setNoOwnHousing] = useState(false);
 
+  // Initialize form data using a function to properly handle the keepRoomData
   const [formData, setFormData] = useState({
     personalInfo: {
       fullName: "",
@@ -66,7 +70,8 @@ function DormitoryApply() {
       degreeLevel: "BACHELOR",
       buildingNumber: keepRoomData?.buildingNumber || "",
       roomNumber: keepRoomData?.roomNumber || "",
-      academicYear: keepRoomData?.academicYear || `${new Date().getFullYear()}/${new Date().getFullYear() + 1}`,
+      academicYear: `${new Date().getFullYear()}/${new Date().getFullYear() + 1}`,
+      keepSameRoom: false,
     },
     familyInfo: {
       father: { name: "", address: "", phone: "" },
@@ -76,6 +81,43 @@ function DormitoryApply() {
       children: [],
     },
   });
+
+  // Update form data if keepRoomData changes
+  useEffect(() => {
+    if (keepRoomData) {
+      setFormData((prevState) => ({
+        ...prevState,
+        dormitoryInfo: {
+          ...prevState.dormitoryInfo,
+          buildingNumber: keepRoomData.buildingNumber || "",
+          roomNumber: keepRoomData.roomNumber || "",
+          academicYear: keepRoomData.academicYear || prevState.dormitoryInfo.academicYear,
+        },
+      }));
+
+      // If we have keepRoomData, the user wants to keep their room
+      setWantsToKeepRoom(true);
+    }
+  }, [keepRoomData]);
+
+  useEffect(() => {
+    // If user unchecks the "want to keep room" option, clear both room and building number
+    // if they were previously populated from keepRoomData
+    if (!wantsToKeepRoom && keepRoomData) {
+      setFormData((prevState) => ({
+        ...prevState,
+        dormitoryInfo: {
+          ...prevState.dormitoryInfo,
+          roomNumber: "", // Always clear room number
+          // Only clear building number if it came from keepRoomData (preserve user input)
+          buildingNumber:
+            keepRoomData.buildingNumber === prevState.dormitoryInfo.buildingNumber
+              ? ""
+              : prevState.dormitoryInfo.buildingNumber,
+        },
+      }));
+    }
+  }, [wantsToKeepRoom, keepRoomData]);
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -123,6 +165,10 @@ function DormitoryApply() {
           setError("Моля посочете предпочитан блок за настаняване.");
           return false;
         }
+        if (wantsToKeepRoom && !dormitoryInfo.roomNumber) {
+          setError("Моля посочете номер на стая, която искате да запазите.");
+          return false;
+        }
         break;
       case 2:
         // Validate family information if needed
@@ -159,16 +205,29 @@ function DormitoryApply() {
 
     setLoading(true);
     try {
-      await applyForDormitory(formData, keepRoomFormId);
+      let keepRoomId = keepRoomFormId;
+
+      // Submit keep room request if user wants to keep their room and we don't already have an ID
+      if (wantsToKeepRoom && !keepRoomId) {
+        const keepRoomResponse = await keepDormitoryRoom({
+          buildingNumber: formData.dormitoryInfo.buildingNumber,
+          roomNumber: formData.dormitoryInfo.roomNumber,
+          academicYear: formData.dormitoryInfo.academicYear,
+        });
+        keepRoomId = keepRoomResponse.formId;
+      }
+
+      // Submit the main application with the keep room form ID if applicable
+      await applyForDormitory(formData, wantsToKeepRoom ? keepRoomId : null);
 
       setSubmitSuccess(true);
       setSnackbarMessage("Заявлението е подадено успешно!");
       setSnackbarOpen(true);
 
-      // Optionally redirect after successful submission
-      setTimeout(() => {
-        navigate("/forms");
-      }, 3000);
+      // Redirect to forms page after successful submission
+      // setTimeout(() => {
+      //   navigate("/forms");
+      // }, 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitSuccess(false);
@@ -185,56 +244,79 @@ function DormitoryApply() {
         return <PersonalInfoForm formData={formData.personalInfo} handleInputChange={handlePersonalInfoChange} />;
       case 1:
         return (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Данни за настаняване
-            </Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <TextField label="Учебна година" value={formData.dormitoryInfo.academicYear} disabled fullWidth />
 
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
-              <TextField label="Учебна година" value={formData.dormitoryInfo.academicYear} disabled fullWidth />
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={wantsToKeepRoom}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setWantsToKeepRoom(isChecked);
 
-              <FormControl fullWidth required>
-                <InputLabel id="degree-level-label">Образователно-квалификационна степен</InputLabel>
-                <Select
-                  labelId="degree-level-label"
-                  value={formData.dormitoryInfo.degreeLevel}
-                  label="Образователно-квалификационна степен"
-                  onChange={(e) => handleDormitoryInfoChange("degreeLevel", e.target.value)}
-                >
-                  {DEGREE_LEVELS.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                    // If checked and keepRoomData exists, restore those values
+                    if (isChecked && keepRoomData) {
+                      setFormData((prevState) => ({
+                        ...prevState,
+                        dormitoryInfo: {
+                          ...prevState.dormitoryInfo,
+                          buildingNumber: keepRoomData.buildingNumber || "",
+                          roomNumber: keepRoomData.roomNumber || "",
+                        },
+                      }));
+                    }
+                  }}
+                />
+              }
+              label="Искам да запазя същата стая от предходната година"
+            />
 
+            {wantsToKeepRoom && (
+              <Alert severity="info">
+                Съгласно чл. 10, ал. 1, т. 4 и чл. 12, ал. 2 от Правилника за настаняване и реда на ползване на
+                студентските общежития и столове към Технически университет – Варна, заявявам желанието си да ползвам
+                стаята, в която съм бил настанен предходната година.
+              </Alert>
+            )}
+
+            <FormControl fullWidth required>
+              <InputLabel id="degree-level-label">Образователно-квалификационна степен</InputLabel>
+              <Select
+                labelId="degree-level-label"
+                value={formData.dormitoryInfo.degreeLevel}
+                label="Образователно-квалификационна степен"
+                onChange={(e) => handleDormitoryInfoChange("degreeLevel", e.target.value)}
+              >
+                {DEGREE_LEVELS.map((option) => (
+                  <MenuItem key={option.id} value={option.id}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            {wantsToKeepRoom ? (
+              // Show both fields with different labels when "keep room" is checked
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                 <TextField
                   required
-                  label="Предпочитан блок"
+                  label="Блок №"
                   type="number"
                   value={formData.dormitoryInfo.buildingNumber}
                   onChange={(e) => handleDormitoryInfoChange("buildingNumber", e.target.value)}
                   sx={{ flexGrow: 1 }}
                 />
                 <TextField
-                  label="Предпочитана стая"
+                  required
+                  label="Стая №"
                   type="number"
                   value={formData.dormitoryInfo.roomNumber}
                   onChange={(e) => handleDormitoryInfoChange("roomNumber", e.target.value)}
                   sx={{ flexGrow: 1 }}
-                  helperText="Незадължително"
                 />
               </Box>
-
-              {keepRoomFormId && (
-                <Alert severity="info">
-                  Вие сте подали искане за запазване на същата стая от предходната година (Блок{" "}
-                  {keepRoomData?.buildingNumber}, Стая {keepRoomData?.roomNumber}).
-                </Alert>
-              )}
-            </Box>
+            ) : null}
           </Box>
         );
       case 2:

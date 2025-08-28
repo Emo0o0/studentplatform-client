@@ -74,10 +74,10 @@ const mapFormDataToApplyRequest = (formData) => {
       studentGroup: null,
       subGroup: null,
     },
-    isReceivingWorkRelatedIncome: declarationInfo.hasEmploymentIncome || null,
-    isReceivingPension: declarationInfo.hasPension || null,
-    isReceivingOtherInsuredIncome: declarationInfo.hasOtherIncome || null,
-    currentInsurer: declarationInfo.isCurrentlyInsured ? declarationInfo.insuredThrough : null,
+    isReceivingWorkRelatedIncome: declarationInfo.hasEmploymentIncome,
+    isReceivingPension: declarationInfo.hasPension,
+    isReceivingOtherInsuredIncome: declarationInfo.hasOtherIncome,
+    currentInsurer: declarationInfo.isCurrentlyInsured ? declarationInfo.insuredThrough : "",
   };
 };
 

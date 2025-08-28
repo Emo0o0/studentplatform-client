@@ -75,8 +75,8 @@ function Forms() {
       title: "Общежития",
       description: "Кандидатствайте за настаняване в студентски общежития и проверете възможностите за настаняване.",
       icon: <HomeIcon fontSize="large" color="primary" />,
-      path: "/dormitory-keep-room", // This now goes to the keep room form first
-      onClick: null, // Let the router handle navigation
+      path: "/dormitory-apply", // Now points directly to the main dormitory form
+      onClick: null,
     },
   ];
 

@@ -28,8 +28,10 @@ import DocumentUploadStep from "../components/scholarship/DocumentUploadStep";
 import ReviewStep from "../components/scholarship/ReviewStep";
 import AcademicInfoStep from "../components/scholarship/AcademicInfoStep";
 import { handleScholarshipSubmit } from "../services/scholarshipService";
+import { useNavigate } from "react-router-dom";
 
 function Scholarship() {
+  const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -130,28 +132,23 @@ function Scholarship() {
 
   const handleSubmit = async () => {
     try {
-      // Show loading indicator
       setLoading(true);
 
       const result = await handleScholarshipSubmit(formData);
 
       if (result.success) {
-        // Show success message
         setSnackbarMessage("Заявлението е изпратено успешно!");
         setSubmitSuccess(true);
         setSnackbarOpen(true);
-
-        // Optional: redirect or reset form
-        // history.push("/dashboard");
-        // or
-        // resetForm();
       } else {
-        // Show error message
         setError(result.error);
         setSnackbarMessage(result.error);
         setSubmitSuccess(false);
         setSnackbarOpen(true);
       }
+      setTimeout(() => {
+        navigate("/forms");
+      }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setError("Възникна проблем при подаване на заявлението. Моля, опитайте отново по-късно.");

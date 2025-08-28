@@ -25,8 +25,10 @@ import {
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
 import PersonalInfoForm from "../components/insurance/PersonalInfoForm";
 import { applyForPreviousHealthInsurance } from "../services/insuranceService";
+import { useNavigate } from "react-router-dom";
 
 function HealthInsurancePrevious() {
+  const navigate = useNavigate();
   const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -116,6 +118,9 @@ function HealthInsurancePrevious() {
       setSubmitSuccess(true);
       setSnackbarMessage("Декларацията е подадена успешно!");
       setSnackbarOpen(true);
+      setTimeout(() => {
+        navigate("/forms");
+      }, 5000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitSuccess(false);
