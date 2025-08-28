@@ -247,18 +247,30 @@ function QueriesPage() {
     const fetchData = async () => {
       try {
         const queryParams = new URLSearchParams();
-        if (faculty) queryParams.append("faculty", faculty);
-        if (department) queryParams.append("department", department);
-        if (specialty) queryParams.append("specialty", specialty);
-
-        const response = await fetch(`https://f626a8e8723e.ngrok-free.app/query/${selectedQuery}?${queryParams}`, {
+        // Only add parameters that are relevant for the current query
+        if (currentQuery.filters.includes("faculty") && faculty) queryParams.append("faculty", faculty);
+        if (currentQuery.filters.includes("department") && department) queryParams.append("department", department);
+        if (currentQuery.filters.includes("specialty") && specialty) queryParams.append("specialty", specialty);
+        const response = await fetch(`http://localhost:8080/query/${selectedQuery}?${queryParams}`, {
           method: "GET",
           headers: {
-            "ngrok-skip-browser-warning": "true",
+            // "ngrok-skip-browser-warning": "true",
           },
         });
         const data = await response.json();
-        setResults(data);
+        // Extract the actual array from the response based on the query type
+        if (data.studentStats && selectedQuery === "studentStats") {
+          setResults(data.studentStats);
+        } else if (data.subjectStats && selectedQuery === "subjectStats") {
+          setResults(data.subjectStats);
+        } else if (data.studentAverages && selectedQuery === "studentAverages") {
+          setResults(data.studentAverages);
+        } else if (data.specialtyAverages && selectedQuery === "specialtyAverages") {
+          setResults(data.specialtyAverages);
+        } else {
+          // If the response structure doesn't match any known pattern, just use the data as is
+          setResults(data);
+        }
       } catch (error) {
         console.error("Error fetching query results:", error);
         // Handle error appropriately

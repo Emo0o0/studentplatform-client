@@ -1,399 +1,186 @@
 import React, { useState } from "react";
 import {
-  Box,
   Container,
-  Paper,
-  Stepper,
-  Step,
-  StepLabel,
   Typography,
+  Card,
+  CardContent,
+  CardActions,
   Button,
-  Divider,
-  Alert,
-  Snackbar,
-  CircularProgress,
+  Box,
   useTheme,
   useMediaQuery,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemButton,
+  Divider,
 } from "@mui/material";
-import ScholarshipTypeStep from "../components/scholarship/ScholarshipTypeStep";
-import PersonalInfoStep from "../components/scholarship/PersonalInfoStep";
-import MeritSuccessStep from "../components/scholarship/MeritSuccessStep";
-import MeritIncomeStep from "../components/scholarship/MeritIncomeStep";
-import SocialScholarshipStep from "../components/scholarship/SocialScholarshipStep";
-import FirstYearStep from "../components/scholarship/FirstYearStep";
-import SpecialAchievementsStep from "../components/scholarship/SpecialAchievementsStep";
-import ForeignStudentStep from "../components/scholarship/ForeignStudentStep";
-import BankInfoStep from "../components/scholarship/BankInfoStep";
-import DocumentUploadStep from "../components/scholarship/DocumentUploadStep";
-import ReviewStep from "../components/scholarship/ReviewStep";
-import AcademicInfoStep from "../components/scholarship/AcademicInfoStep";
-import { handleScholarshipSubmit } from "../services/scholarshipService";
+import { Link as RouterLink } from "react-router-dom";
+import SchoolIcon from "@mui/icons-material/School";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import HomeIcon from "@mui/icons-material/Home";
 
 function Forms() {
-  const API_BASE = import.meta.env.VITE_API_BASE || "http://localhost:8080";
-  const [loading, setLoading] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState("");
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [activeStep, setActiveStep] = useState(0);
-  const [error, setError] = useState("");
-  const [formData, setFormData] = useState({
-    scholarshipType: "",
-    personalInfo: {},
-    specificInfo: {},
-    incomeInfo: {},
-    bankInfo: {},
-    documents: [],
-  });
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [healthDialogOpen, setHealthDialogOpen] = useState(false);
 
-  const validateStep = (currentStep) => {
-    setError("");
-
-    switch (currentStep) {
-      case 0:
-        if (!formData.scholarshipType) {
-          setError("Моля изберете тип стипендия");
-          return false;
-        }
-        break;
-      case 1: // Personal Info
-        const requiredPersonalFields = [
-          "firstName",
-          "lastName",
-          "egn",
-          "email",
-          "phone",
-          "city",
-          "street",
-          "streetNumber",
-        ];
-        const missingPersonal = requiredPersonalFields.find((field) => !formData.personalInfo[field]);
-        if (missingPersonal) {
-          setError("Моля попълнете всички задължителни полета");
-          return false;
-        }
-        break;
-      case 2:
-        const requiredAcademicFields = ["facultyNumber", "faculty", "specialty"];
-        const missingAcademic = requiredAcademicFields.find((field) => !formData.academicInfo[field]);
-        if (missingAcademic) {
-          setError("Моля попълнете всички задължителни академични данни");
-          return false;
-        }
-        break;
-      // ...existing validation cases...
-    }
-    return true;
+  const handleOpenHealthDialog = () => {
+    setHealthDialogOpen(true);
   };
 
-  const getSteps = () => {
-    const baseSteps = ["Тип стипендия", "Лична информация", "Академична информация"];
-
-    switch (formData.scholarshipType) {
-      case "MERIT_SUCCESS":
-        return [...baseSteps, "Успех", "Банкова информация", "Документи", "Преглед"];
-      case "MERIT_WITH_INCOME":
-        return [...baseSteps, "Успех", "Доходи", "Банкова информация", "Документи", "Преглед"];
-      case "SOCIAL_PREFERENTIAL":
-        return [...baseSteps, "Успех", "Социално основание", "Банкова информация", "Документи", "Преглед"];
-      case "FIRST_YEAR":
-        return [...baseSteps, "Кандидатстудентски изпити", "Банкова информация", "Документи", "Преглед"];
-      case "SPECIAL_ACHIEVEMENTS":
-        return [...baseSteps, "Успех", "Постижения", "Банкова информация", "Документи", "Преглед"];
-      case "FOREIGN_STUDENT":
-        return [...baseSteps, "Успех", "Банкова информация", "Документи", "Преглед"];
-      default:
-        return [...baseSteps, "Успех", "Банкова информация", "Документи", "Преглед"];
-    }
+  const handleCloseHealthDialog = () => {
+    setHealthDialogOpen(false);
   };
 
-  const [maxVisitedStep, setMaxVisitedStep] = useState(0);
+  const healthInsuranceOptions = [
+    {
+      title: "Здравно осигуряване за текущ период",
+      description: "Подайте заявление за здравно осигуряване за текущата академична година",
+      path: "/health-insurance",
+    },
+    {
+      title: "Здравно осигуряване за минал период",
+      description: "Подайте заявление за здравно осигуряване за минал период, за който не сте били осигурени",
+      path: "/health-insurance-previous",
+    },
+    {
+      title: "Прекратяване на здравно осигуряване",
+      description: "Подайте заявление за прекратяване на здравно осигуряване през университета",
+      path: "/health-insurance-terminate",
+    },
+  ];
 
-  const handleStepClick = (stepIndex) => {
-    // Allow navigation up to the highest step reached
-    if (stepIndex <= maxVisitedStep) {
-      setActiveStep(stepIndex);
-    }
-  };
-
-  const handleNext = () => {
-    if (validateStep(activeStep)) {
-      setActiveStep((prevStep) => {
-        const nextStep = prevStep + 1;
-        setMaxVisitedStep(Math.max(maxVisitedStep, nextStep));
-        return nextStep;
-      });
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      // Show loading indicator
-      setLoading(true);
-
-      const result = await handleScholarshipSubmit(formData);
-
-      if (result.success) {
-        // Show success message
-        setSnackbarMessage("Заявлението е изпратено успешно!");
-        setSubmitSuccess(true);
-        setSnackbarOpen(true);
-
-        // Optional: redirect or reset form
-        // history.push("/dashboard");
-        // or
-        // resetForm();
-      } else {
-        // Show error message
-        setError(result.error);
-        setSnackbarMessage(result.error);
-        setSubmitSuccess(false);
-        setSnackbarOpen(true);
-      }
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setError("Възникна проблем при подаване на заявлението. Моля, опитайте отново по-късно.");
-      setSnackbarMessage("Възникна проблем при подаване на заявлението.");
-      setSubmitSuccess(false);
-      setSnackbarOpen(true);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const getStepContent = (step) => {
-    const steps = getSteps();
-    const stepName = steps[step];
-
-    switch (stepName) {
-      case "Тип стипендия":
-        return (
-          <ScholarshipTypeStep
-            formData={formData}
-            onChange={(type) => setFormData({ ...formData, scholarshipType: type })}
-          />
-        );
-      case "Лична информация":
-        return (
-          <PersonalInfoStep
-            formData={formData.personalInfo}
-            onChange={(data) => setFormData({ ...formData, personalInfo: data })}
-          />
-        );
-      case "Академична информация":
-        return (
-          <AcademicInfoStep
-            formData={formData.academicInfo}
-            onChange={(data) => setFormData({ ...formData, academicInfo: data })}
-          />
-        );
-      case "Успех":
-        return (
-          <MeritSuccessStep
-            formData={formData.specificInfo}
-            onChange={(data) => setFormData({ ...formData, specificInfo: data })}
-          />
-        );
-      case "Доходи":
-        return (
-          <MeritIncomeStep
-            formData={formData} // Pass the entire formData object
-            onChange={(updatedFormData) => {
-              console.log("MeritIncomeStep onChange called with:", updatedFormData);
-              setFormData(updatedFormData);
-            }}
-          />
-        );
-      case "Социално основание":
-        return (
-          <SocialScholarshipStep
-            formData={formData.specificInfo}
-            onChange={(data) => setFormData({ ...formData, specificInfo: data })}
-          />
-        );
-      case "Кандидатстудентски изпити":
-        return (
-          <FirstYearStep
-            formData={formData.specificInfo}
-            onChange={(data) => setFormData({ ...formData, specificInfo: data })}
-          />
-        );
-      case "Постижения":
-        return (
-          <SpecialAchievementsStep
-            formData={formData.specificInfo}
-            onChange={(data) => setFormData({ ...formData, specificInfo: data })}
-          />
-        );
-      case "Произход":
-        return (
-          <ForeignStudentStep
-            formData={formData.specificInfo}
-            onChange={(data) => setFormData({ ...formData, specificInfo: data })}
-          />
-        );
-      case "Банкова информация":
-        return <BankInfoStep formData={formData} onChange={(data) => setFormData({ ...formData, bankInfo: data })} />;
-      case "Документи":
-        return (
-          <DocumentUploadStep
-            formData={formData}
-            scholarshipType={formData.scholarshipType}
-            onChange={(data) => setFormData({ ...formData, documents: data.documents })}
-          />
-        );
-      case "Преглед":
-        return <ReviewStep formData={formData} />;
-      default:
-        return null;
-    }
-  };
-
-  const steps = getSteps();
+  const formTypes = [
+    {
+      title: "Стипендии",
+      description:
+        "Кандидатствайте за различни типове студентски стипендии - успех, социални, специални постижения и други.",
+      icon: <SchoolIcon fontSize="large" color="primary" />,
+      path: "/scholarship",
+      onClick: null,
+    },
+    {
+      title: "Здравно осигуряване",
+      description: "Подайте заявление за здравно осигуряване за студенти с актуална информация и необходими документи.",
+      icon: <LocalHospitalIcon fontSize="large" color="primary" />,
+      path: "#",
+      onClick: handleOpenHealthDialog,
+    },
+    {
+      title: "Общежития",
+      description: "Кандидатствайте за настаняване в студентски общежития и проверете възможностите за настаняване.",
+      icon: <HomeIcon fontSize="large" color="primary" />,
+      path: "/dormitory-keep-room", // This now goes to the keep room form first
+      onClick: null, // Let the router handle navigation
+    },
+  ];
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3, md: 3 } }}>
         <Typography variant="h4" align="center" gutterBottom>
-          Заявление за стипендия
+          Студентски формуляри
         </Typography>
-        <Typography variant="body2" align="center" color="text.secondary" gutterBottom>
-          Кликнете върху стъпките, за да навигирате между тях
+        <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 3 }}>
+          Изберете типа формуляр, който желаете да попълните
         </Typography>
-        <Divider sx={{ mb: 4 }} />
-
-        {/* Responsive Stepper */}
-        <Box
-          sx={{
-            overflowX: "auto",
-            mb: 4,
-            // Add small padding to prevent focus outline clipping
-            px: 0.5,
-            py: 1,
-            // Remove scrollbar in most browsers but keep functionality
-            "&::-webkit-scrollbar": {
-              height: "6px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              backgroundColor: "rgba(0,0,0,0.2)",
-              borderRadius: "6px",
-            },
-          }}
-        >
-          <Stepper
-            activeStep={activeStep}
-            alternativeLabel={!isMobile}
-            orientation={isMobile ? "vertical" : "horizontal"}
-            sx={{
-              minWidth: isMobile ? "unset" : steps.length > 5 ? "700px" : "unset",
-              "& .MuiStepLabel-label": {
-                mt: isMobile ? 0 : 1,
-                wordBreak: "break-word",
-                whiteSpace: "pre-wrap",
-              },
-            }}
-          >
-            {steps.map((label, index) => (
-              <Step
-                key={label}
-                completed={index <= maxVisitedStep && index < activeStep}
-                sx={{
-                  cursor: index <= maxVisitedStep ? "pointer" : "default",
-                  "& .MuiStepLabel-label": {
-                    color: index <= maxVisitedStep ? "text.primary" : "text.disabled",
-                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
-                  },
-                  "& .MuiStepIcon-root": {
-                    color: index <= maxVisitedStep ? "primary.main" : "grey.400",
-                  },
-                  "&:hover .MuiStepLabel-label": {
-                    color: index <= maxVisitedStep ? "primary.main" : "text.disabled",
-                  },
-                }}
-                onClick={() => handleStepClick(index)}
-              >
-                <StepLabel>{label}</StepLabel>
-              </Step>
-            ))}
-          </Stepper>
-        </Box>
-
-        {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {error}
-          </Alert>
-        )}
-
-        <Box sx={{ mt: 2, mb: 2 }}>{getStepContent(activeStep)}</Box>
 
         <Box
           sx={{
             display: "flex",
-            flexDirection: isMobile ? "column" : "row",
-            justifyContent: "space-between",
-            mt: 4,
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "center",
+            alignItems: "stretch",
             gap: 2,
+            maxWidth: "950px",
+            mx: "auto",
           }}
         >
-          <Button
-            variant="outlined"
-            disabled={activeStep === 0 || loading}
-            onClick={() => setActiveStep(activeStep - 1)}
-            fullWidth={isMobile}
-          >
-            Назад
-          </Button>
+          {formTypes.map((form, index) => (
+            <Card
+              key={index}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                flex: { xs: "1", sm: "1 1 0px" }, // Equal width on sm and up
+                transition: "transform 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: 6,
+                },
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mb: 2,
+                    p: 2,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(25, 118, 210, 0.1)",
+                    width: "fit-content",
+                    mx: "auto",
+                  }}
+                >
+                  {form.icon}
+                </Box>
+                <Typography variant="h5" component="h2" align="center" gutterBottom>
+                  {form.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  {form.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                {form.onClick ? (
+                  <Button variant="contained" fullWidth onClick={form.onClick}>
+                    Към формуляра
+                  </Button>
+                ) : (
+                  <Button component={RouterLink} to={form.path} variant="contained" fullWidth>
+                    Към формуляра
+                  </Button>
+                )}
+              </CardActions>
+            </Card>
+          ))}
+        </Box>
 
-          <Button
-            variant="contained"
-            onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-            disabled={loading}
-            fullWidth={isMobile}
-            sx={{
-              position: "relative",
-              "& .MuiCircularProgress-root": {
-                position: "absolute",
-                left: "50%",
-                top: "50%",
-                marginLeft: "-12px",
-                marginTop: "-12px",
-              },
-            }}
-          >
-            {loading ? (
-              <>
-                <span style={{ visibility: "hidden" }}>
-                  {activeStep === steps.length - 1 ? "Подай заявление" : "Напред"}
-                </span>
-                <CircularProgress size={24} color="inherit" />
-              </>
-            ) : activeStep === steps.length - 1 ? (
-              "Подай заявление"
-            ) : (
-              "Напред"
-            )}
-          </Button>
+        <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Typography variant="body2" color="text.secondary">
+            Имате въпроси? Свържете се със студентската канцелария за повече информация.
+          </Typography>
         </Box>
       </Paper>
 
-      {/* Success/Error Snackbar */}
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={() => setSnackbarOpen(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={submitSuccess ? "success" : "error"}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
+      {/* Health Insurance Options Dialog */}
+      <Dialog open={healthDialogOpen} onClose={handleCloseHealthDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>Изберете тип здравно осигуряване</DialogTitle>
+        <DialogContent>
+          <List>
+            {healthInsuranceOptions.map((option, index) => (
+              <React.Fragment key={index}>
+                <ListItem disablePadding>
+                  <ListItemButton component={RouterLink} to={option.path} onClick={handleCloseHealthDialog}>
+                    <ListItemText
+                      primary={option.title}
+                      secondary={option.description}
+                      primaryTypographyProps={{ fontWeight: "medium" }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+                {index < healthInsuranceOptions.length - 1 && <Divider />}
+              </React.Fragment>
+            ))}
+          </List>
+        </DialogContent>
+      </Dialog>
     </Container>
   );
 }
