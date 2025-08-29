@@ -13,6 +13,7 @@ import {
   TableRow,
   Chip,
   Box,
+  Paper,
 } from "@mui/material";
 import { School as SchoolIcon } from "@mui/icons-material";
 
@@ -45,48 +46,110 @@ function Curriculum() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h3" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <SchoolIcon fontSize="large" color="primary" />
-        Учебен план
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Paper elevation={0} sx={{ p: 3, mb: 4, borderRadius: 2, bgcolor: "background.paper" }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            pb: 2,
+          }}
+        >
+          <SchoolIcon fontSize="large" color="primary" />
+          Учебен план
+        </Typography>
+      </Paper>
 
-      <Grid container spacing={4}>
+      <Grid container spacing={3}>
         {Object.entries(curriculumData).map(([semester, subjects]) => (
           <Grid item xs={12} md={6} key={semester}>
-            <Card sx={{ height: "100%" }}>
-              <CardContent>
-                <Typography variant="h4" gutterBottom color="primary" sx={{ textAlign: "center", mb: 3 }}>
+            <Card
+              sx={{
+                height: "100%",
+                borderRadius: 2,
+                boxShadow: 2,
+                transition: "transform 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: 4,
+                },
+              }}
+            >
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                <Typography
+                  variant="h5"
+                  component="h2"
+                  gutterBottom
+                  color="primary"
+                  sx={{
+                    textAlign: "center",
+                    mb: 3,
+                    borderBottom: "2px solid",
+                    borderColor: "primary.light",
+                    pb: 1,
+                  }}
+                >
                   {semester} семестър
                 </Typography>
                 <TableContainer>
-                  <Table size="small">
+                  <Table size="small" aria-label={`Предмети ${semester} семестър`}>
                     <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: "bold" }}>Предмет</TableCell>
-                        <TableCell align="center" sx={{ fontWeight: "bold" }}>
+                      <TableRow sx={{ backgroundColor: "primary.light" }}>
+                        <TableCell sx={{ fontWeight: "bold", color: "primary.contrastText" }}>Предмет</TableCell>
+                        <TableCell align="center" sx={{ fontWeight: "bold", color: "primary.contrastText" }}>
                           Кредити
                         </TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>Преподавател</TableCell>
+                        <TableCell sx={{ fontWeight: "bold", color: "primary.contrastText" }}>Преподавател</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
                       {subjects.map((subject, index) => (
-                        <TableRow key={index} sx={{ "&:nth-of-type(odd)": { backgroundColor: "grey.50" } }}>
+                        <TableRow
+                          key={index}
+                          sx={{
+                            "&:nth-of-type(odd)": { backgroundColor: "grey.50" },
+                            "&:hover": { backgroundColor: "grey.100" },
+                          }}
+                        >
                           <TableCell sx={{ fontWeight: 500 }}>{subject.name}</TableCell>
                           <TableCell align="center">
-                            <Chip label={subject.credits} size="small" color="primary" variant="outlined" />
+                            <Chip
+                              label={subject.credits}
+                              size="small"
+                              color="primary"
+                              sx={{ fontWeight: "bold", minWidth: "30px" }}
+                            />
                           </TableCell>
-                          <TableCell sx={{ fontSize: "0.9rem", color: "text.secondary" }}>{subject.teacher}</TableCell>
+                          <TableCell sx={{ fontSize: "0.9rem" }}>{subject.teacher}</TableCell>
                         </TableRow>
                       ))}
                     </TableBody>
                   </Table>
                 </TableContainer>
-                <Box sx={{ mt: 2, textAlign: "center" }}>
-                  <Typography variant="body2" color="primary">
-                    Общо кредити: {subjects.reduce((sum, subject) => sum + subject.credits, 0)}
+                <Box
+                  sx={{
+                    mt: 3,
+                    textAlign: "right",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography variant="body2" color="text.secondary">
+                    Брой предмети: {subjects.length}
                   </Typography>
+                  <Chip
+                    label={`Общо кредити: ${subjects.reduce((sum, subject) => sum + subject.credits, 0)}`}
+                    color="primary"
+                    variant="filled"
+                    sx={{ fontWeight: "bold" }}
+                  />
                 </Box>
               </CardContent>
             </Card>

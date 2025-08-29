@@ -443,7 +443,7 @@ function QueriesPage() {
             <Table>
               <TableHead>
                 <TableRow sx={{ bgcolor: "primary.main" }}>
-                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>ID на студент</TableCell>
+                  <TableCell sx={{ color: "white", fontWeight: "bold" }}>Студент</TableCell>
                   <TableCell sx={{ color: "white", fontWeight: "bold" }} align="right">
                     Среден успех
                   </TableCell>
@@ -458,7 +458,10 @@ function QueriesPage() {
                     <TableCell>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                         <PersonIcon color="action" fontSize="small" />
-                        <Typography fontWeight="bold">Студент {row.studentId}</Typography>
+                        <Typography fontWeight="bold">
+                          {row.studentName}
+                          {row.studentFacultyNumber}
+                        </Typography>
                       </Box>
                     </TableCell>
                     <TableCell align="right">
@@ -553,6 +556,8 @@ function QueriesPage() {
   const getCurrentQuery = () => queries.find((q) => q.id === selectedQuery);
   const currentQuery = getCurrentQuery();
 
+  // ...existing code...
+
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h3" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -560,95 +565,99 @@ function QueriesPage() {
         Справки и статистики
       </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" gutterBottom color="primary">
-                Избор на заявка
-              </Typography>
+      <Grid container spacing={3} direction="column">
+        <Grid item xs={12}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={4}>
+              <Card>
+                <CardContent>
+                  <Typography variant="h6" gutterBottom color="primary">
+                    Избор на заявка
+                  </Typography>
 
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Тип заявка</InputLabel>
-                <Select
-                  value={selectedQuery}
-                  label="Тип заявка"
-                  onChange={(e) => {
-                    setSelectedQuery(e.target.value);
-                    setResults(null); // Clear previous results
-                  }}
-                >
-                  {queries.map((query) => (
-                    <MenuItem key={query.id} value={query.id}>
-                      {query.title}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
+                  <FormControl fullWidth sx={{ mb: 2 }}>
+                    <InputLabel>Тип заявка</InputLabel>
+                    <Select
+                      value={selectedQuery}
+                      label="Тип заявка"
+                      onChange={(e) => {
+                        setSelectedQuery(e.target.value);
+                        setResults(null); // Clear previous results
+                      }}
+                    >
+                      {queries.map((query) => (
+                        <MenuItem key={query.id} value={query.id}>
+                          {query.title}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
 
-              {currentQuery && (
-                <Alert severity="info" sx={{ mb: 2 }}>
-                  {currentQuery.description}
-                </Alert>
-              )}
+                  {currentQuery && (
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                      {currentQuery.description}
+                    </Alert>
+                  )}
 
-              {currentQuery && currentQuery.filters.includes("faculty") && (
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Факултет</InputLabel>
-                  <Select value={faculty} label="Факултет" onChange={(e) => setFaculty(e.target.value)}>
-                    <MenuItem value="">Всички факултети</MenuItem>
-                    {faculties.map((f) => (
-                      <MenuItem key={f.value} value={f.value}>
-                        {f.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+                  {currentQuery && currentQuery.filters.includes("faculty") && (
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <InputLabel>Факултет</InputLabel>
+                      <Select value={faculty} label="Факултет" onChange={(e) => setFaculty(e.target.value)}>
+                        <MenuItem value="">Всички факултети</MenuItem>
+                        {faculties.map((f) => (
+                          <MenuItem key={f.value} value={f.value}>
+                            {f.label}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
 
-              {currentQuery && currentQuery.filters.includes("department") && (
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Катедра</InputLabel>
-                  <Select value={department} label="Катедра" onChange={(e) => setDepartment(e.target.value)}>
-                    <MenuItem value="">Всички катедри</MenuItem>
-                    {departments.map((d) => (
-                      <MenuItem key={d} value={d}>
-                        {d}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+                  {currentQuery && currentQuery.filters.includes("department") && (
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <InputLabel>Катедра</InputLabel>
+                      <Select value={department} label="Катедра" onChange={(e) => setDepartment(e.target.value)}>
+                        <MenuItem value="">Всички катедри</MenuItem>
+                        {departments.map((d) => (
+                          <MenuItem key={d} value={d}>
+                            {d}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
 
-              {currentQuery && currentQuery.filters.includes("specialty") && (
-                <FormControl fullWidth sx={{ mb: 2 }}>
-                  <InputLabel>Специалност</InputLabel>
-                  <Select value={specialty} label="Специалност" onChange={(e) => setSpecialty(e.target.value)}>
-                    <MenuItem value="">Всички специалности</MenuItem>
-                    {specialties.map((s) => (
-                      <MenuItem key={s} value={s}>
-                        {s}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+                  {currentQuery && currentQuery.filters.includes("specialty") && (
+                    <FormControl fullWidth sx={{ mb: 2 }}>
+                      <InputLabel>Специалност</InputLabel>
+                      <Select value={specialty} label="Специалност" onChange={(e) => setSpecialty(e.target.value)}>
+                        <MenuItem value="">Всички специалности</MenuItem>
+                        {specialties.map((s) => (
+                          <MenuItem key={s} value={s}>
+                            {s}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  )}
 
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={handleExecuteQuery}
-                disabled={!selectedQuery || loading}
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <TrendingUpIcon />}
-                sx={{ mt: 2 }}
-              >
-                {loading ? "Изпълнява се..." : "Изпълни заявка"}
-              </Button>
-            </CardContent>
-          </Card>
+                  <Button
+                    variant="contained"
+                    fullWidth
+                    onClick={handleExecuteQuery}
+                    disabled={!selectedQuery || loading}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <TrendingUpIcon />}
+                    sx={{ mt: 2 }}
+                  >
+                    {loading ? "Изпълнява се..." : "Изпълни заявка"}
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
 
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12}>
           {results ? (
             <Card>
               <CardContent>

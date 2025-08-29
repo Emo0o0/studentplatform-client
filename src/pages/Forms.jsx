@@ -154,7 +154,7 @@ function Forms() {
 
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Typography variant="body2" color="text.secondary">
-            Имате въпроси? Свържете се със студентската канцелария за повече информация.
+            Имате въпроси? Лошо.
           </Typography>
         </Box>
       </Paper>
@@ -171,7 +171,10 @@ function Forms() {
                     <ListItemText
                       primary={option.title}
                       secondary={option.description}
-                      primaryTypographyProps={{ fontWeight: "medium" }}
+                      slotProps={{
+                        primary: { fontWeight: "medium" },
+                        secondary: { fontSize: "0.875rem" },
+                      }}
                     />
                   </ListItemButton>
                 </ListItem>

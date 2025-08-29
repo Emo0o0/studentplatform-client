@@ -8,7 +8,7 @@ export default defineConfig({
     host: true, // allow external access
     cors: true, // enable cross origin
     allowedHosts: [
-      "d81a9aa55c0c.ngrok-free.app", // <--- paste your ngrok domain here
+      "https://d53acc509b17.ngrok-free.app", // <--- paste your ngrok domain here
     ],
   },
 });
