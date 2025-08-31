@@ -28,6 +28,8 @@ import {
   Person as PersonIcon,
   TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
+import { Link as RouterLink } from "react-router-dom";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 function QueriesPage() {
   const [selectedQuery, setSelectedQuery] = useState("");
@@ -560,10 +562,24 @@ function QueriesPage() {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h3" gutterBottom sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-        <AnalyticsIcon fontSize="large" color="primary" />
-        Справки и статистики
-      </Typography>
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
+        <Typography variant="h3" sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <AnalyticsIcon fontSize="large" color="primary" />
+          Справки и статистики
+        </Typography>
+
+        {/* Add this button for admins to review forms */}
+        <Button
+          component={RouterLink}
+          to="/admin/forms"
+          variant="contained"
+          color="primary"
+          startIcon={<AssignmentIcon />}
+          sx={{ px: 3, py: 1 }}
+        >
+          Преглед на формуляри
+        </Button>
+      </Box>
 
       <Grid container spacing={3} direction="column">
         <Grid item xs={12}>

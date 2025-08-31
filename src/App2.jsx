@@ -19,6 +19,11 @@ import Queries from "./pages/QueriesPage.jsx";
 import ViewScholarshipForms from "./pages/ViewScholarshipForms.jsx";
 import ViewInsuranceForms from "./pages/ViewInsuranceForms.jsx";
 import ViewDormitoryForms from "./pages/ViewDormitoryForms.jsx";
+import ViewFormsSelection from "./pages/ViewFormsSelection.jsx";
+import AdminFormsSelection from "./pages/AdminFormsSelection.jsx";
+import AdminScholarshipForms from "./pages/AdminScholarshipForms.jsx";
+import AdminInsuranceForms from "./pages/AdminInsuranceForms.jsx";
+import AdminDormitoryForms from "./pages/AdminDormitoryForms.jsx";
 
 // Import components
 import Navigation from "./components/Navigation";
@@ -45,6 +50,11 @@ function App() {
           <Route path="/my-forms" element={<ViewScholarshipForms />} />
           <Route path="/my-insurance-forms" element={<ViewInsuranceForms />} />
           <Route path="/my-dormitory-forms" element={<ViewDormitoryForms />} />
+          <Route path="/view-forms" element={<ViewFormsSelection />} />
+          <Route path="/admin/forms" element={<AdminFormsSelection />} />
+          <Route path="/admin/forms/scholarship" element={<AdminScholarshipForms />} />
+          <Route path="/admin/forms/insurance" element={<AdminInsuranceForms />} />
+          <Route path="/admin/forms/dormitory" element={<AdminDormitoryForms />} />
         </Routes>
       </Box>
     </Router>

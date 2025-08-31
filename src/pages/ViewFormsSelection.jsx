@@ -1,0 +1,109 @@
+import React from "react";
+import {
+  Container,
+  Typography,
+  Box,
+  Paper,
+  Card,
+  CardContent,
+  CardActions,
+  Button,
+  Grid,
+  IconButton,
+} from "@mui/material";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import SchoolIcon from "@mui/icons-material/School";
+import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
+import HomeIcon from "@mui/icons-material/Home";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
+function ViewFormsSelection() {
+  const navigate = useNavigate();
+
+  const formCategories = [
+    {
+      title: "Стипендии",
+      description: "Преглед на всички изпратени формуляри за стипендии",
+      icon: <SchoolIcon fontSize="large" color="primary" />,
+      path: "/my-forms",
+    },
+    {
+      title: "Здравно осигуряване",
+      description: "Преглед на всички изпратени формуляри за здравно осигуряване",
+      icon: <LocalHospitalIcon fontSize="large" color="primary" />,
+      path: "/my-insurance-forms",
+    },
+    {
+      title: "Общежития",
+      description: "Преглед на всички изпратени формуляри за настаняване в общежитие",
+      icon: <HomeIcon fontSize="large" color="primary" />,
+      path: "/my-dormitory-forms",
+    },
+  ];
+
+  return (
+    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
+          <IconButton onClick={() => navigate(-1)} sx={{ mr: 1 }}>
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography variant="h4">Преглед на изпратени формуляри</Typography>
+        </Box>
+
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+          Изберете категория формуляри, която искате да прегледате
+        </Typography>
+
+        <Grid container spacing={3} justifyContent="center">
+          {formCategories.map((category, index) => (
+            <Grid item xs={12} sm={6} md={4} key={index}>
+              <Card
+                sx={{
+                  height: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                  transition: "transform 0.2s, box-shadow 0.2s",
+                  "&:hover": {
+                    transform: "translateY(-4px)",
+                    boxShadow: 6,
+                  },
+                }}
+              >
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      mb: 2,
+                      p: 2,
+                      borderRadius: "50%",
+                      backgroundColor: "rgba(25, 118, 210, 0.1)",
+                      width: "fit-content",
+                      mx: "auto",
+                    }}
+                  >
+                    {category.icon}
+                  </Box>
+                  <Typography variant="h5" component="h2" align="center" gutterBottom>
+                    {category.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" align="center">
+                    {category.description}
+                  </Typography>
+                </CardContent>
+                <CardActions>
+                  <Button component={RouterLink} to={category.path} variant="contained" fullWidth>
+                    Преглед
+                  </Button>
+                </CardActions>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Paper>
+    </Container>
+  );
+}
+
+export default ViewFormsSelection;

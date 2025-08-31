@@ -94,34 +94,13 @@ function Forms() {
         <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
           <Button
             component={RouterLink}
-            to="/my-forms"
+            to="/view-forms"
             variant="outlined"
             color="primary"
             startIcon={<AssignmentIcon />}
             sx={{ px: 3, py: 1 }}
           >
             Преглед на изпратени формуляри
-          </Button>
-
-          <Button
-            component={RouterLink}
-            to="/my-insurance-forms"
-            variant="outlined"
-            color="primary"
-            startIcon={<AssignmentIcon />}
-            sx={{ px: 3, py: 1, ml: 2 }}
-          >
-            Преглед на формуляри за здравно осигуряване
-          </Button>
-          <Button
-            component={RouterLink}
-            to="/my-dormitory-forms"
-            variant="outlined"
-            color="primary"
-            startIcon={<AssignmentIcon />}
-            sx={{ px: 3, py: 1, ml: 2 }}
-          >
-            Преглед на формуляри за общежитие
           </Button>
         </Box>
 
