@@ -146,9 +146,9 @@ function Scholarship() {
         setSubmitSuccess(false);
         setSnackbarOpen(true);
       }
-      setTimeout(() => {
-        navigate("/forms");
-      }, 2000);
+      // setTimeout(() => {
+      //   navigate("/forms");
+      // }, 2000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setError("Възникна проблем при подаване на заявлението. Моля, опитайте отново по-късно.");

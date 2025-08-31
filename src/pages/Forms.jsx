@@ -23,6 +23,7 @@ import { Link as RouterLink } from "react-router-dom";
 import SchoolIcon from "@mui/icons-material/School";
 import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import HomeIcon from "@mui/icons-material/Home";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 
 function Forms() {
   const theme = useTheme();
@@ -89,6 +90,40 @@ function Forms() {
         <Typography variant="body1" align="center" color="text.secondary" sx={{ mb: 3 }}>
           Изберете типа формуляр, който желаете да попълните
         </Typography>
+
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+          <Button
+            component={RouterLink}
+            to="/my-forms"
+            variant="outlined"
+            color="primary"
+            startIcon={<AssignmentIcon />}
+            sx={{ px: 3, py: 1 }}
+          >
+            Преглед на изпратени формуляри
+          </Button>
+
+          <Button
+            component={RouterLink}
+            to="/my-insurance-forms"
+            variant="outlined"
+            color="primary"
+            startIcon={<AssignmentIcon />}
+            sx={{ px: 3, py: 1, ml: 2 }}
+          >
+            Преглед на формуляри за здравно осигуряване
+          </Button>
+          <Button
+            component={RouterLink}
+            to="/my-dormitory-forms"
+            variant="outlined"
+            color="primary"
+            startIcon={<AssignmentIcon />}
+            sx={{ px: 3, py: 1, ml: 2 }}
+          >
+            Преглед на формуляри за общежитие
+          </Button>
+        </Box>
 
         <Box
           sx={{

@@ -16,6 +16,9 @@ import DormitoryKeepRoom from "./pages/DormitoryKeepRoom.jsx";
 import DormitoryApply from "./pages/DormitoryApply.jsx";
 import PersonalInfo from "./pages/PersonalInfo";
 import Queries from "./pages/QueriesPage.jsx";
+import ViewScholarshipForms from "./pages/ViewScholarshipForms.jsx";
+import ViewInsuranceForms from "./pages/ViewInsuranceForms.jsx";
+import ViewDormitoryForms from "./pages/ViewDormitoryForms.jsx";
 
 // Import components
 import Navigation from "./components/Navigation";
@@ -39,6 +42,9 @@ function App() {
           <Route path="/dormitory-apply" element={<DormitoryApply />} />
           <Route path="/profile" element={<PersonalInfo />} />
           <Route path="/queries" element={<Queries />} />
+          <Route path="/my-forms" element={<ViewScholarshipForms />} />
+          <Route path="/my-insurance-forms" element={<ViewInsuranceForms />} />
+          <Route path="/my-dormitory-forms" element={<ViewDormitoryForms />} />
         </Routes>
       </Box>
     </Router>

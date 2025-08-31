@@ -321,6 +321,14 @@ export const FAMILY_STATUSES = [
   { id: "SINGLE", label: "Несемейни" },
 ];
 
+export const FORM_STATUS = [
+  { id: "SENT", label: "Изпратено" },
+  { id: "SEEN", label: "Прегледано" },
+  { id: "DENIED", label: "Отказано" },
+  { id: "APPROVED", label: "Одобрено" },
+  { id: "RETURNED", label: "Върнато" },
+];
+
 export const SCHOLARSHIP_OPTIONS = [
   {
     id: "MERIT_SUCCESS",
@@ -415,3 +423,4 @@ export const getScholarshipName = (id) => getDisplayValue(SCHOLARSHIP_OPTIONS, i
 export const getSocialTypeName = (id) => getDisplayValue(SOCIAL_TYPES, id);
 export const getCountryName = (id) => getDisplayValue(COUNTRY_CODES, id);
 export const getFacultyName = (id) => getDisplayValue(FACULTY_OPTIONS, id);
+export const getFormStatusLabel = (id) => getDisplayValue(FORM_STATUS, id);
