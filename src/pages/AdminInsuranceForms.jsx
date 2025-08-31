@@ -47,7 +47,12 @@ import {
   ExpandLess as ExpandLessIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { fetchAdminInsuranceForms, updateInsuranceFormStatus } from "../services/adminFormsService";
+import {
+  fetchAdminInsuranceApplyForms,
+  fetchAdminInsuranceLateForms,
+  fetchAdminInsuranceTerminateForms,
+  updateInsuranceFormStatus,
+} from "../services/adminFormsService";
 
 function AdminInsuranceForms() {
   const navigate = useNavigate();
@@ -87,13 +92,19 @@ function AdminInsuranceForms() {
     const getInsuranceForms = async () => {
       try {
         setLoading(true);
-        const data = await fetchAdminInsuranceForms(filters.specialty);
+
+        // Fetch all three types of forms separately
+        const [applyData, lateData, terminateData] = await Promise.all([
+          fetchAdminInsuranceApplyForms(filters.specialty),
+          fetchAdminInsuranceLateForms(filters.specialty),
+          fetchAdminInsuranceTerminateForms(filters.specialty),
+        ]);
 
         // Organize forms by type
         const formsByType = {
-          apply: data.applyForms || [],
-          late: data.lateForms || [],
-          terminate: data.terminateForms || [],
+          apply: applyData.forms || [],
+          late: lateData.forms || [],
+          terminate: terminateData.forms || [],
         };
 
         setForms(formsByType);
@@ -117,6 +128,7 @@ function AdminInsuranceForms() {
     getInsuranceForms();
   }, [filters.specialty]);
 
+  // Rest of the component remains the same...
   useEffect(() => {
     applyFilters();
   }, [filters, forms, tabValue]);
@@ -442,7 +454,7 @@ function AdminInsuranceForms() {
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={{ minWidth: 150 }}>
                     <InputLabel>Специалност</InputLabel>
                     <Select
                       value={filters.specialty}
@@ -458,7 +470,7 @@ function AdminInsuranceForms() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={{ minWidth: 160 }}>
                     <InputLabel>Тип формуляр</InputLabel>
                     <Select
                       value={filters.formType}
@@ -474,7 +486,7 @@ function AdminInsuranceForms() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={{ minWidth: 100 }}>
                     <InputLabel>Статус</InputLabel>
                     <Select
                       value={filters.status}

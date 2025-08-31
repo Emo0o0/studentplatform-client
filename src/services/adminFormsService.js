@@ -39,12 +39,11 @@ export const fetchAdminScholarshipForms = async (specialty = "") => {
  */
 export const updateScholarshipFormStatus = async (formId, status) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/scholarship/update/${formId}/status`, {
+    const response = await fetch(`${API_BASE_URL}/form/scholarship/update?formId=${formId}&status=${status}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status }),
     });
 
     if (!response.ok) {
@@ -59,14 +58,13 @@ export const updateScholarshipFormStatus = async (formId, status) => {
 };
 
 /**
- * Fetches health insurance forms (all types) for admin review
+ * Fetches insurance apply forms for admin review
  * @param {string} specialty - Optional specialty filter
- * @returns {Promise<Object>} - The insurance forms data
+ * @returns {Promise<Object>} - The insurance apply forms data
  */
-export const fetchAdminInsuranceForms = async (specialty = "") => {
+export const fetchAdminInsuranceApplyForms = async (specialty = "") => {
   try {
-    // Build the URL with the optional specialty parameter
-    let url = `${API_BASE_URL}/form/healthInsurance/all`;
+    let url = `${API_BASE_URL}/form/healthInsurance/apply`;
     if (specialty) {
       url += `?specialty=${specialty}`;
     }
@@ -84,7 +82,67 @@ export const fetchAdminInsuranceForms = async (specialty = "") => {
 
     return await response.json();
   } catch (error) {
-    console.error("Error fetching admin insurance forms:", error);
+    console.error("Error fetching admin insurance apply forms:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches insurance late forms for admin review
+ * @param {string} specialty - Optional specialty filter
+ * @returns {Promise<Object>} - The insurance late forms data
+ */
+export const fetchAdminInsuranceLateForms = async (specialty = "") => {
+  try {
+    let url = `${API_BASE_URL}/form/healthInsurance/late`;
+    if (specialty) {
+      url += `?specialty=${specialty}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching admin insurance late forms:", error);
+    throw error;
+  }
+};
+
+/**
+ * Fetches insurance terminate forms for admin review
+ * @param {string} specialty - Optional specialty filter
+ * @returns {Promise<Object>} - The insurance terminate forms data
+ */
+export const fetchAdminInsuranceTerminateForms = async (specialty = "") => {
+  try {
+    let url = `${API_BASE_URL}/form/healthInsurance/terminate`;
+    if (specialty) {
+      url += `?specialty=${specialty}`;
+    }
+
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching admin insurance terminate forms:", error);
     throw error;
   }
 };
@@ -98,13 +156,15 @@ export const fetchAdminInsuranceForms = async (specialty = "") => {
  */
 export const updateInsuranceFormStatus = async (formId, formType, status) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/healthInsurance/update/${formId}/status`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status, formType }),
-    });
+    const response = await fetch(
+      `${API_BASE_URL}/form/healthInsurance/${formType}/update?formId=${formId}&status=${status}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
@@ -156,12 +216,11 @@ export const fetchAdminDormitoryForms = async (specialty = "") => {
  */
 export const updateDormitoryFormStatus = async (formId, status) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/dormitory/update/${formId}/status`, {
+    const response = await fetch(`${API_BASE_URL}/form/dormitory/update?formId=${formId}&status=${status}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ status }),
     });
 
     if (!response.ok) {

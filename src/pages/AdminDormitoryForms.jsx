@@ -442,7 +442,7 @@ function AdminDormitoryForms() {
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={{ minWidth: 150 }}>
                     <InputLabel>Специалност</InputLabel>
                     <Select
                       value={filters.specialty}
@@ -458,7 +458,7 @@ function AdminDormitoryForms() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={{ minWidth: 200 }}>
                     <InputLabel>Заявка за запазване на стая</InputLabel>
                     <Select
                       value={filters.hasKeepRoom}
@@ -472,7 +472,7 @@ function AdminDormitoryForms() {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth size="small">
+                  <FormControl fullWidth size="small" sx={{ minWidth: 100 }}>
                     <InputLabel>Статус</InputLabel>
                     <Select
                       value={filters.status}
