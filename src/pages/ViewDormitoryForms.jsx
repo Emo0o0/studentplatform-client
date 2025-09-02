@@ -23,6 +23,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { fetchStudentDormitoryForms } from "../services/viewDormitoryFormsService";
+import keycloak from "../config/keycloak";
 
 function ViewDormitoryForms() {
   const [loading, setLoading] = useState(true);
@@ -34,8 +35,25 @@ function ViewDormitoryForms() {
     const getDormitoryForms = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual user ID from auth context
-        const studentId = 1;
+
+        // Extract student ID from JWT token
+        let studentId = null;
+        if (keycloak.tokenParsed && keycloak.tokenParsed.name) {
+          // Get the third value from name claim which contains space-separated values
+          const nameParts = keycloak.tokenParsed.name.split(" ");
+          if (nameParts.length >= 3) {
+            studentId = nameParts[2]; // Get third value
+            console.log("Extracted student ID from token:", studentId);
+          }
+        }
+
+        if (!studentId) {
+          console.warn("Could not extract student ID from token, falling back to default");
+          // You could either use a fallback or show an error
+          throw new Error("Неуспешно извличане на студентски номер от токена.");
+        }
+
+        // Pass the extracted student ID to your service
         const data = await fetchStudentDormitoryForms(studentId);
         setForms(data.forms || []);
       } catch (err) {
@@ -47,7 +65,7 @@ function ViewDormitoryForms() {
     };
 
     getDormitoryForms();
-  }, []);
+  }, [keycloak.tokenParsed]);
 
   // Format date string to a more readable format
   const formatDate = (dateString) => {

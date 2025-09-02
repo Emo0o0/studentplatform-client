@@ -1,10 +1,10 @@
 import { API_BASE_URL } from "../config/constants";
+import { authPost } from "./apiUtility";
 
 export const applyForHealthInsurance = async (formData) => {
   try {
     const requestBody = mapFormDataToApplyRequest(formData);
-
-    return await submitRequest(`${API_BASE_URL}/form/healthInsurance/apply`, requestBody);
+    return await authPost(`${API_BASE_URL}/form/healthInsurance/apply`, requestBody);
   } catch (error) {
     console.error("Error applying for health insurance:", error);
     throw error;
@@ -14,8 +14,7 @@ export const applyForHealthInsurance = async (formData) => {
 export const applyForPreviousHealthInsurance = async (formData) => {
   try {
     const requestBody = mapFormDataToPreviousApplyRequest(formData);
-
-    return await submitRequest(`${API_BASE_URL}/form/healthInsurance/late`, requestBody);
+    return await authPost(`${API_BASE_URL}/form/healthInsurance/late`, requestBody);
   } catch (error) {
     console.error("Error applying for previous period health insurance:", error);
     throw error;
@@ -25,8 +24,7 @@ export const applyForPreviousHealthInsurance = async (formData) => {
 export const terminateHealthInsurance = async (formData) => {
   try {
     const requestBody = mapFormDataToTerminateRequest(formData);
-
-    return await submitRequest(`${API_BASE_URL}/form/healthInsurance/terminate`, requestBody);
+    return await authPost(`${API_BASE_URL}/form/healthInsurance/terminate`, requestBody);
   } catch (error) {
     console.error("Error terminating health insurance:", error);
     throw error;
@@ -169,45 +167,6 @@ const mapFormDataToTerminateRequest = (formData) => {
     // For previous period, these are false by default because user declares they didn't receive these incomes
     schoolYear: formattedDate,
     terminationReason: formData.terminationInfo?.terminationReason || "",
-  };
-};
-
-/**
- * Generic function to submit a request and handle response
- */
-const submitRequest = async (url, requestData) => {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  });
-
-  console.log("Response status:", response.status);
-
-  // Handle both success and error cases with a single response reading
-  let responseData;
-  try {
-    responseData = await response.json();
-  } catch (e) {
-    // If we can't parse JSON, get the text instead
-    try {
-      responseData = { message: await response.text() };
-    } catch (textError) {
-      responseData = { message: "Could not read response" };
-    }
-  }
-
-  // After reading the response body once, check if the response was ok
-  if (!response.ok) {
-    throw new Error(responseData.message || `Error ${response.status}: ${response.statusText}`);
-  }
-
-  // Return success response
-  return {
-    success: true,
-    data: responseData,
   };
 };
 

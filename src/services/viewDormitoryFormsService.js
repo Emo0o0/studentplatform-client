@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/constants";
+import { authGet } from "./apiUtility";
 
 /**
  * Fetches dormitory application forms for a specific student
@@ -7,19 +8,7 @@ import { API_BASE_URL } from "../config/constants";
  */
 export const fetchStudentDormitoryForms = async (studentId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/dormitory/apply?studentId=${studentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      //   credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    return await response.json();
+    return await authGet(`${API_BASE_URL}/form/dormitory/apply?studentId=${studentId}`);
   } catch (error) {
     console.error("Error fetching dormitory forms:", error);
     throw error;

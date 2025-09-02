@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config/constants";
-
+import { authGet } from "./apiUtility";
 /**
  * Fetches insurance forms for applying for the current year
  * @param {number} studentId - The student's ID
@@ -7,19 +7,7 @@ import { API_BASE_URL } from "../config/constants";
  */
 export const fetchInsuranceApplyForms = async (studentId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/healthInsurance/apply?studentId=${studentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      //   credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    return await response.json();
+    return await authGet(`${API_BASE_URL}/form/healthInsurance/apply?studentId=${studentId}`);
   } catch (error) {
     console.error("Error fetching insurance apply forms:", error);
     throw error;
@@ -33,19 +21,7 @@ export const fetchInsuranceApplyForms = async (studentId) => {
  */
 export const fetchInsuranceLateforms = async (studentId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/healthInsurance/late?studentId=${studentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    return await response.json();
+    return await authGet(`${API_BASE_URL}/form/healthInsurance/late?studentId=${studentId}`);
   } catch (error) {
     console.error("Error fetching insurance late forms:", error);
     throw error;
@@ -59,19 +35,7 @@ export const fetchInsuranceLateforms = async (studentId) => {
  */
 export const fetchInsuranceTerminateForms = async (studentId) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/healthInsurance/terminate?studentId=${studentId}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      // credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    return await response.json();
+    return await authGet(`${API_BASE_URL}/form/healthInsurance/terminate?studentId=${studentId}`);
   } catch (error) {
     console.error("Error fetching insurance termination forms:", error);
     throw error;

@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/constants";
+import { authPost } from "./apiUtility";
 
 /**
  * Submit handler for scholarships
@@ -88,7 +89,7 @@ const handleMeritSuccessSubmit = async (formData) => {
   };
 
   console.log("Sending Merit Success data:", JSON.stringify(requestData, null, 2));
-  return await submitRequest(`${API_BASE_URL}/form/scholarship/merit`, requestData);
+  return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/merit`, requestData);
 };
 
 /**
@@ -106,7 +107,7 @@ const handleFirstYearSubmit = async (formData) => {
   };
 
   console.log("Sending First Year data:", JSON.stringify(requestData, null, 2));
-  return await submitRequest(`${API_BASE_URL}/form/scholarship/firstyear`, requestData);
+  return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/firstyear`, requestData);
 };
 
 /**
@@ -121,7 +122,7 @@ const handleForeignStudentSubmit = async (formData) => {
   };
 
   console.log("Sending Foreign Student data:", JSON.stringify(requestData, null, 2));
-  return await submitRequest(`${API_BASE_URL}/form/scholarship/foreign`, requestData);
+  return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/foreign`, requestData);
 };
 
 /**
@@ -137,7 +138,7 @@ const handleSocialPreferentialSubmit = async (formData) => {
   };
 
   console.log("Sending Social/Preferential data:", JSON.stringify(requestData, null, 2));
-  return await submitRequest(`${API_BASE_URL}/form/scholarship/social`, requestData);
+  return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/social`, requestData);
 };
 
 const handleSpecialAchievementSubmit = async (formData) => {
@@ -148,15 +149,9 @@ const handleSpecialAchievementSubmit = async (formData) => {
   };
 
   console.log("Sending Achievement data:", JSON.stringify(requestData, null, 2));
-  return await submitRequest(`${API_BASE_URL}/form/scholarship/achievement`, requestData);
+  return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/achievement`, requestData);
 };
 
-/**
- * Submit handler for Merit with Income scholarship
- */
-/**
- * Submit handler for Merit with Income scholarship
- */
 /**
  * Submit handler for Merit with Income scholarship
  */
@@ -232,43 +227,24 @@ const handleMeritWithIncomeSubmit = async (formData) => {
   };
 
   console.log("Sending Merit with Income data:", JSON.stringify(requestData, null, 2));
-  return await submitRequest(`${API_BASE_URL}/form/scholarship/meritincome`, requestData);
+  return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/meritincome`, requestData);
 };
+
 /**
- * Generic function to submit a request and handle response
+ * Use authPost to submit requests and format response in a consistent way
  */
-const submitRequest = async (url, requestData) => {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestData),
-  });
-
-  console.log("Response status:", response.status);
-
-  // Handle both success and error cases with a single response reading
-  let responseData;
+const submitAuthRequest = async (url, requestData) => {
   try {
-    responseData = await response.json();
-  } catch (e) {
-    // If we can't parse JSON, get the text instead
-    try {
-      responseData = { message: await response.text() };
-    } catch (textError) {
-      responseData = { message: "Could not read response" };
-    }
+    const response = await authPost(url, requestData);
+    return {
+      success: true,
+      data: response,
+    };
+  } catch (error) {
+    console.error("Error in authenticated request:", error);
+    return {
+      success: false,
+      error: error.message || "An error occurred during submission",
+    };
   }
-
-  // After reading the response body once, check if the response was ok
-  if (!response.ok) {
-    throw new Error(responseData.message || `Error ${response.status}: ${response.statusText}`);
-  }
-
-  // Return success response
-  return {
-    success: true,
-    data: responseData,
-  };
 };

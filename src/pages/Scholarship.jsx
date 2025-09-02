@@ -50,6 +50,8 @@ function Scholarship() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
   const validateStep = (currentStep) => {
     setError("");
 
@@ -133,7 +135,7 @@ function Scholarship() {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-
+      setIsSubmitted(true);
       const result = await handleScholarshipSubmit(formData);
 
       if (result.success) {
@@ -145,6 +147,7 @@ function Scholarship() {
         setSnackbarMessage(result.error);
         setSubmitSuccess(false);
         setSnackbarOpen(true);
+        setIsSubmitted(false);
       }
       // setTimeout(() => {
       //   navigate("/forms");
@@ -155,6 +158,7 @@ function Scholarship() {
       setSnackbarMessage("Възникна проблем при подаване на заявлението.");
       setSubmitSuccess(false);
       setSnackbarOpen(true);
+      setIsSubmitted(false);
     } finally {
       setLoading(false);
     }
@@ -346,7 +350,7 @@ function Scholarship() {
           <Button
             variant="contained"
             onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-            disabled={loading}
+            disabled={loading || (activeStep === steps.length - 1 && isSubmitted)}
             fullWidth={isMobile}
             sx={{
               position: "relative",

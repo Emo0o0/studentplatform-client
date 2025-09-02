@@ -55,52 +55,61 @@ function ViewFormsSelection() {
           Изберете категория формуляри, която искате да прегледате
         </Typography>
 
-        <Grid container spacing={3} justifyContent="center">
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            justifyContent: "center",
+            alignItems: "stretch",
+            gap: 3,
+            maxWidth: "950px",
+            mx: "auto",
+          }}
+        >
           {formCategories.map((category, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
-              <Card
-                sx={{
-                  height: "100%",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: "transform 0.2s, box-shadow 0.2s",
-                  "&:hover": {
-                    transform: "translateY(-4px)",
-                    boxShadow: 6,
-                  },
-                }}
-              >
-                <CardContent sx={{ flexGrow: 1 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      mb: 2,
-                      p: 2,
-                      borderRadius: "50%",
-                      backgroundColor: "rgba(25, 118, 210, 0.1)",
-                      width: "fit-content",
-                      mx: "auto",
-                    }}
-                  >
-                    {category.icon}
-                  </Box>
-                  <Typography variant="h5" component="h2" align="center" gutterBottom>
-                    {category.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" align="center">
-                    {category.description}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button component={RouterLink} to={category.path} variant="contained" fullWidth>
-                    Преглед
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
+            <Card
+              key={index}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                flex: { xs: "1", sm: "1 1 0px" }, // Equal width on sm and up
+                transition: "transform 0.2s, box-shadow 0.2s",
+                "&:hover": {
+                  transform: "translateY(-4px)",
+                  boxShadow: 6,
+                },
+              }}
+            >
+              <CardContent sx={{ flexGrow: 1 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    mb: 2,
+                    p: 2,
+                    borderRadius: "50%",
+                    backgroundColor: "rgba(25, 118, 210, 0.1)",
+                    width: "fit-content",
+                    mx: "auto",
+                  }}
+                >
+                  {category.icon}
+                </Box>
+                <Typography variant="h5" component="h2" align="center" gutterBottom>
+                  {category.title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  {category.description}
+                </Typography>
+              </CardContent>
+              <CardActions>
+                <Button component={RouterLink} to={category.path} variant="contained" fullWidth>
+                  Преглед
+                </Button>
+              </CardActions>
+            </Card>
           ))}
-        </Grid>
+        </Box>
       </Paper>
     </Container>
   );

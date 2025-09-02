@@ -46,6 +46,7 @@ function DormitoryApply() {
   const [maxVisitedStep, setMaxVisitedStep] = useState(0);
   const [wantsToKeepRoom, setWantsToKeepRoom] = useState(false);
   const [noOwnHousing, setNoOwnHousing] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // Initialize form data using a function to properly handle the keepRoomData
   const [formData, setFormData] = useState({
@@ -159,12 +160,7 @@ function DormitoryApply() {
         }
         break;
       case 1:
-        // Validate dormitory information
         const dormitoryInfo = formData.dormitoryInfo;
-        if (!dormitoryInfo.degreeLevel || !dormitoryInfo.buildingNumber) {
-          setError("Моля посочете предпочитан блок за настаняване.");
-          return false;
-        }
         if (wantsToKeepRoom && !dormitoryInfo.roomNumber) {
           setError("Моля посочете номер на стая, която искате да запазите.");
           return false;
@@ -206,6 +202,7 @@ function DormitoryApply() {
     setLoading(true);
     try {
       let keepRoomId = keepRoomFormId;
+      setIsSubmitted(true);
 
       // Submit keep room request if user wants to keep their room and we don't already have an ID
       if (wantsToKeepRoom && !keepRoomId) {
@@ -233,6 +230,7 @@ function DormitoryApply() {
       setSubmitSuccess(false);
       setSnackbarMessage(error.message || "Възникна грешка при подаване на заявлението. Моля опитайте отново.");
       setSnackbarOpen(true);
+      setIsSubmitted(false);
     } finally {
       setLoading(false);
     }
@@ -280,7 +278,7 @@ function DormitoryApply() {
               </Alert>
             )}
 
-            <FormControl fullWidth required>
+            {/* <FormControl fullWidth required>
               <InputLabel id="degree-level-label">Образователно-квалификационна степен</InputLabel>
               <Select
                 labelId="degree-level-label"
@@ -294,7 +292,7 @@ function DormitoryApply() {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl> */}
 
             {wantsToKeepRoom ? (
               // Show both fields with different labels when "keep room" is checked
@@ -447,7 +445,7 @@ function DormitoryApply() {
           <Button
             variant="contained"
             onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-            disabled={loading}
+            disabled={loading || (activeStep === steps.length - 1 && isSubmitted)}
             fullWidth={isMobile}
             sx={{
               position: "relative",

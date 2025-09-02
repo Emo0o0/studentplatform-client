@@ -31,6 +31,7 @@ import {
   getFamilyStatusName,
   getFormStatusLabel,
 } from "../constants/dropdownOptions";
+import keycloak from "../config/keycloak";
 
 // TabPanel component for handling tab content
 function TabPanel(props) {
@@ -79,7 +80,21 @@ function ViewScholarshipForms() {
       try {
         setLoading(true);
         // TODO: Replace with actual user ID from auth context
-        const studentId = 1;
+        let studentId = null;
+        if (keycloak.tokenParsed && keycloak.tokenParsed.name) {
+          // Get the third value from name claim which contains space-separated values
+          const nameParts = keycloak.tokenParsed.name.split(" ");
+          if (nameParts.length >= 3) {
+            studentId = nameParts[2]; // Get third value
+            console.log("Extracted student ID from token:", studentId);
+          }
+        }
+
+        if (!studentId) {
+          console.warn("Could not extract student ID from token, falling back to default");
+          // You could either use a fallback or show an error
+          throw new Error("Неуспешно извличане на студентски номер от токена.");
+        }
         const data = await fetchStudentScholarshipForms(studentId);
         setForms(data.forms);
       } catch (err) {

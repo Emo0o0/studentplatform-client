@@ -236,7 +236,7 @@ export default function ReviewStep({ formData }) {
                   Описание на постижението
                 </Typography>
                 <Typography sx={{ whiteSpace: "pre-wrap" }}>
-                  {formData.specificInfo?.achievementDescription || "—"}
+                  {formData.specificInfo?.achievementTopic || "—"}
                 </Typography>
               </Grid>
             </Grid>

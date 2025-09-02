@@ -23,6 +23,7 @@ import {
   fetchInsuranceLateforms,
   fetchInsuranceTerminateForms,
 } from "../services/viewInsuranceFormsService";
+import keycloak from "./../config/keycloak";
 
 // TabPanel component for handling tab content
 function TabPanel(props) {
@@ -89,7 +90,21 @@ function ViewInsuranceForms() {
       try {
         setLoading(true);
         // TODO: Replace with actual user ID from auth context
-        const studentId = 1;
+        let studentId = null;
+        if (keycloak.tokenParsed && keycloak.tokenParsed.name) {
+          // Get the third value from name claim which contains space-separated values
+          const nameParts = keycloak.tokenParsed.name.split(" ");
+          if (nameParts.length >= 3) {
+            studentId = nameParts[2]; // Get third value
+            console.log("Extracted student ID from token:", studentId);
+          }
+        }
+
+        if (!studentId) {
+          console.warn("Could not extract student ID from token, falling back to default");
+          // You could either use a fallback or show an error
+          throw new Error("Неуспешно извличане на студентски номер от токена.");
+        }
 
         // Fetch all types of forms in parallel
         const [applyData, lateData, terminateData] = await Promise.all([

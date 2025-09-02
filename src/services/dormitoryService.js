@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config/constants";
+import { authPost } from "./apiUtility";
 
 /**
  * Submit a request to keep the same dormitory room
@@ -7,28 +8,12 @@ import { API_BASE_URL } from "../config/constants";
  */
 export const keepDormitoryRoom = async (data) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/form/dormitory/keepRoom`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        buildingNumber: parseInt(data.buildingNumber, 10),
-        roomNumber: parseInt(data.roomNumber, 10),
-      }),
-    });
+    const requestBody = {
+      buildingNumber: parseInt(data.buildingNumber, 10),
+      roomNumber: parseInt(data.roomNumber, 10),
+    };
 
-    // Handle both success and error cases with a single response reading
-    let responseData;
-    try {
-      responseData = await response.json();
-    } catch (e) {
-      responseData = { message: await response.text() };
-    }
-
-    if (!response.ok) {
-      throw new Error(responseData.message || `Error ${response.status}: ${response.statusText}`);
-    }
+    const responseData = await authPost(`${API_BASE_URL}/form/dormitory/keepRoom`, requestBody);
 
     return {
       formId: responseData.formId,
@@ -51,21 +36,8 @@ export const applyForDormitory = async (formData, keepRoomFormId = null) => {
     // Transform UI form data to match API DTO structure
     const requestBody = mapFormDataToDormitoryRequest(formData, keepRoomFormId);
 
-    const response = await fetch(`${API_BASE_URL}/form/dormitory/apply`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
-
-    const responseData = await response.json();
-
-    if (!response.ok) {
-      throw new Error(responseData.message || `Error ${response.status}: ${response.statusText}`);
-    }
-
-    return responseData;
+    // Use authPost instead of regular fetch
+    return await authPost(`${API_BASE_URL}/form/dormitory/apply`, requestBody);
   } catch (error) {
     console.error("Error submitting dormitory application:", error);
     throw error;

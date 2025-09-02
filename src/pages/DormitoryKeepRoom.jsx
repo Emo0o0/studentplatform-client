@@ -36,22 +36,6 @@ function DormitoryKeepRoom() {
     });
   };
 
-  const validateForm = () => {
-    setError("");
-
-    if (!formData.buildingNumber) {
-      setError("Моля въведете номер на блок.");
-      return false;
-    }
-
-    if (!formData.roomNumber) {
-      setError("Моля въведете номер на стая.");
-      return false;
-    }
-
-    return true;
-  };
-
   const handleSubmit = async () => {
     if (!validateForm()) return;
 

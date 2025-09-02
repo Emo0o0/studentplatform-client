@@ -61,6 +61,7 @@ function HealthInsuranceApply() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [maxVisitedStep, setMaxVisitedStep] = useState(0);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const steps = ["Лична информация", "Декларация"];
 
@@ -121,6 +122,7 @@ function HealthInsuranceApply() {
     try {
       await applyForHealthInsurance(formData);
 
+      setIsSubmitted(true);
       setSubmitSuccess(true);
       setSnackbarMessage("Декларацията е подадена успешно!");
       setSnackbarOpen(true);
@@ -130,6 +132,7 @@ function HealthInsuranceApply() {
         navigate("/forms");
       }, 5000);
     } catch (error) {
+      setIsSubmitted(false);
       console.error("Error submitting form:", error);
       setSubmitSuccess(false);
       setSnackbarMessage(
@@ -378,7 +381,7 @@ function HealthInsuranceApply() {
           <Button
             variant="contained"
             onClick={activeStep === steps.length - 1 ? handleSubmit : handleNext}
-            disabled={loading}
+            disabled={loading || (activeStep === steps.length - 1 && isSubmitted)}
             fullWidth={isMobile}
             sx={{
               position: "relative",
