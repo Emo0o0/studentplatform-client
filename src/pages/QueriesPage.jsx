@@ -30,8 +30,11 @@ import {
 } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import { useAuth } from "../config/AuthContext";
+import { authFetchJson } from "../services/apiUtility";
 
 function QueriesPage() {
+  const { keycloak } = useAuth();
   const [selectedQuery, setSelectedQuery] = useState("");
   const [faculty, setFaculty] = useState("");
   const [department, setDepartment] = useState("");
@@ -136,116 +139,9 @@ function QueriesPage() {
     "ТТТ",
   ];
 
-  // Mock data for different queries
-  const mockData = {
-    student_stats: [
-      {
-        specialty: "КСТ",
-        total: 45,
-        interrupted: 3,
-        reinstated: 2,
-        graduated: 12,
-        notAttended: 5,
-        withFail: 8,
-      },
-      {
-        specialty: "СИТ",
-        total: 38,
-        interrupted: 2,
-        reinstated: 1,
-        graduated: 15,
-        notAttended: 3,
-        withFail: 6,
-      },
-      {
-        specialty: "Киберсигурност",
-        total: 52,
-        interrupted: 4,
-        reinstated: 3,
-        graduated: 18,
-        notAttended: 7,
-        withFail: 12,
-      },
-    ],
-    subject_grades: [
-      {
-        subject: "ООП",
-        averageGrade: 4.67,
-        sixes: 8,
-        fives: 12,
-        fours: 15,
-        threes: 10,
-        twos: 3,
-        notAttended: 2,
-        eligible: 45,
-        ineligible: 5,
-      },
-      {
-        subject: "Спорт",
-        averageGrade: 85.5,
-        sixes: 0,
-        fives: 0,
-        fours: 0,
-        threes: 0,
-        twos: 0,
-        notAttended: 2,
-        eligible: 40,
-        ineligible: 8,
-      },
-      {
-        subject: "ЛА",
-        averageGrade: 4.2,
-        sixes: 5,
-        fives: 8,
-        fours: 12,
-        threes: 18,
-        twos: 5,
-        notAttended: 4,
-        eligible: 42,
-        ineligible: 6,
-      },
-      {
-        subject: "ФМ",
-        averageGrade: 4.8,
-        sixes: 12,
-        fives: 18,
-        fours: 10,
-        threes: 8,
-        twos: 2,
-        notAttended: 1,
-        eligible: 49,
-        ineligible: 2,
-      },
-    ],
-    student_average: [
-      { studentId: 1, averageGrade: 4.5 },
-      { studentId: 2, averageGrade: 5.2 },
-      { studentId: 3, averageGrade: 3.8 },
-      { studentId: 4, averageGrade: 5.8 },
-      { studentId: 5, averageGrade: 4.1 },
-      { studentId: 6, averageGrade: 5.5 },
-      { studentId: 7, averageGrade: 3.2 },
-      { studentId: 8, averageGrade: 4.9 },
-    ],
-    specialty_average: [
-      { courseYear: "ОБЩО", averageGrade: 4.57 },
-      { courseYear: "I курс", averageGrade: 5.0 },
-      { courseYear: "II курс", averageGrade: 4.8 },
-      { courseYear: "III курс", averageGrade: 4.2 },
-      { courseYear: "IV курс", averageGrade: 4.5 },
-    ],
-  };
-
   const handleExecuteQuery = () => {
     setLoading(true);
 
-    // Simulate API call - replace this with your actual API call
-    // setTimeout(() => {
-    //   setResults(mockData[selectedQuery] || []);
-    //   setLoading(false);
-    // }, 1000);
-
-    // Example of how to integrate with your backend:
     const fetchData = async () => {
       try {
         const queryParams = new URLSearchParams();
@@ -253,13 +149,9 @@ function QueriesPage() {
         if (currentQuery.filters.includes("faculty") && faculty) queryParams.append("faculty", faculty);
         if (currentQuery.filters.includes("department") && department) queryParams.append("department", department);
         if (currentQuery.filters.includes("specialty") && specialty) queryParams.append("specialty", specialty);
-        const response = await fetch(`http://localhost:8080/query/${selectedQuery}?${queryParams}`, {
-          method: "GET",
-          headers: {
-            // "ngrok-skip-browser-warning": "true",
-          },
-        });
-        const data = await response.json();
+
+        const data = await authFetchJson(`http://localhost:8080/query/${selectedQuery}?${queryParams}`);
+
         // Extract the actual array from the response based on the query type
         if (data.studentStats && selectedQuery === "studentStats") {
           setResults(data.studentStats);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppBar,
@@ -31,17 +31,6 @@ function Navigation() {
   const navigate = useNavigate();
   const location = useLocation();
   const { authenticated, loading, login, logout, user } = useAuth();
-  // Add this state to force show login button after a timeout
-  const [showLoginButton, setShowLoginButton] = useState(false);
-
-  // Always show the login button after 1 second, even if still loading
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowLoginButton(true);
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const menuItems = [
     { text: "Програма", icon: <EventNoteIcon />, path: "/schedule" },
@@ -94,8 +83,9 @@ function Navigation() {
     </Box>
   );
 
-  // Determine what to show in the auth section
+  // Updated auth section rendering logic
   const renderAuthSection = () => {
+    // If authenticated, show user info and logout
     if (authenticated) {
       return (
         <>
@@ -111,12 +101,13 @@ function Navigation() {
       );
     }
 
-    // If still loading and haven't forced showing the login button yet
-    if (loading && !showLoginButton) {
+    // If loading AND authenticated is confirmed false, show login button
+    // This ensures we only show spinner when we're genuinely uncertain about auth state
+    if (loading && authenticated !== false) {
       return <CircularProgress color="inherit" size={24} />;
     }
 
-    // Either not loading or we've forced showing the login button
+    // Not authenticated, show login button
     return (
       <Button color="inherit" onClick={login}>
         Вход

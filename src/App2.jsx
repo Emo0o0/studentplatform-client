@@ -34,12 +34,29 @@ import Navigation from "./components/Navigation";
 
 // Update HomePage component
 const HomePage = () => {
+  const { authenticated, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Handle redirect after login
+  useEffect(() => {
+    if (authenticated && !loading) {
+      const redirectPath = localStorage.getItem("auth_redirect");
+      if (redirectPath) {
+        console.log("Found redirect path after login:", redirectPath);
+        localStorage.removeItem("auth_redirect");
+        navigate(redirectPath);
+      }
+    }
+  }, [authenticated, loading, navigate]);
+
   return (
     <Box sx={{ p: 4, textAlign: "center" }}>
       <Typography variant="h4" gutterBottom>
-        Добре дошли
+        {authenticated ? "" : "Добре дошли"}
       </Typography>
-      <Typography variant="body1">Моля, влезте в акаунта си, за да получите достъп до студентските услуги.</Typography>
+      <Typography variant="body1">
+        {authenticated ? "" : "Моля, влезте в акаунта си, за да получите достъп до студентските услуги."}
+      </Typography>
     </Box>
   );
 };

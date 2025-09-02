@@ -8,7 +8,6 @@ const ProtectedRoute = ({ children }) => {
 
   // Immediate login redirect if not authenticated and not loading
   useEffect(() => {
-    // More aggressive approach - redirect immediately if not authenticated
     if (!loading && !authenticated) {
       console.log("Not authenticated, redirecting to login immediately");
       // Store current location before redirecting
