@@ -22,9 +22,10 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import FiberManualRecordIcon from "@mui/icons-material/FiberManualRecord";
-import PersonalInfoForm from "../components/insurance/PersonalInfoForm";
 import { terminateHealthInsurance } from "../services/insuranceService";
 import { useNavigate } from "react-router-dom";
+import PersonalInfoStep from "../components/scholarship/PersonalInfoStep";
+import AcademicInfoStep from "../components/scholarship/AcademicInfoStep";
 
 function HealthInsuranceTerminate() {
   const navigate = useNavigate();
@@ -36,20 +37,8 @@ function HealthInsuranceTerminate() {
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    personalInfo: {
-      fullName: "",
-      course: "",
-      specialty: "",
-      facultyNumber: "",
-      city: "",
-      street: "",
-      block: "",
-      entrance: "",
-      floor: "",
-      apartment: "",
-      egn: "",
-      phone: "",
-    },
+    personalInfo: {},
+    academicInfo: {},
     terminationInfo: {
       terminationDate: null,
       terminationReason: "",
@@ -62,7 +51,10 @@ function HealthInsuranceTerminate() {
   const [maxVisitedStep, setMaxVisitedStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const steps = ["Лична информация", "Заявление за спиране"];
+  const [personalInfoValid, setPersonalInfoValid] = useState(false);
+  const [academicInfoValid, setAcademicInfoValid] = useState(false);
+
+  const steps = ["Лична информация", "Академична информация", "Заявление за спиране"];
 
   const validateStep = (currentStep) => {
     setError("");
@@ -71,12 +63,20 @@ function HealthInsuranceTerminate() {
       case 0:
         // Validate personal information
         const personalInfo = formData.personalInfo;
-        if (!personalInfo.fullName || !personalInfo.facultyNumber || !personalInfo.egn) {
+        if (!personalInfoValid) {
           setError("Моля попълнете всички задължителни полета.");
           return false;
         }
         break;
       case 1:
+        // Validate academic information
+        const academicInfo = formData.academicInfo;
+        if (!academicInfoValid) {
+          setError("Моля попълнете всички задължителни академични полета.");
+          return false;
+        }
+        break;
+      case 2:
         // Validate termination information
         const terminationInfo = formData.terminationInfo;
         if (!terminationInfo.terminationDate) {
@@ -118,14 +118,32 @@ function HealthInsuranceTerminate() {
 
     setLoading(true);
     try {
-      await terminateHealthInsurance(formData);
+      // Transform data to match the format expected by the service
+      const transformedFormData = {
+        personalInfo: {
+          ...formData.personalInfo,
+          // Create fullName from firstName, middleName, and lastName
+          fullName: `${formData.personalInfo.firstName || ""} ${formData.personalInfo.middleName || ""} ${
+            formData.personalInfo.lastName || ""
+          }`.trim(),
+          // Map academic info to personalInfo structure as expected by the service
+          facultyNumber: formData.academicInfo.facultyNumber || "",
+          course: formData.academicInfo.courseYear || "",
+          specialty: formData.academicInfo.specialty || "",
+          faculty: formData.academicInfo.faculty || "",
+        },
+        terminationInfo: formData.terminationInfo,
+      };
+
+      await terminateHealthInsurance(transformedFormData);
+
       setIsSubmitted(true);
       setSubmitSuccess(true);
       setSnackbarMessage("Заявлението е подадено успешно!");
       setSnackbarOpen(true);
       setTimeout(() => {
         navigate("/forms");
-      }, 5000);
+      }, 3000);
     } catch (error) {
       setIsSubmitted(false);
       console.error("Error submitting form:", error);
@@ -149,9 +167,20 @@ function HealthInsuranceTerminate() {
     });
   };
 
-  // Handler specifically for PersonalInfoForm component
-  const handlePersonalInfoChange = (field, value) => {
-    handleInputChange("personalInfo", field, value);
+  // Handler for PersonalInfoStep component
+  const handlePersonalInfoChange = (data) => {
+    setFormData({
+      ...formData,
+      personalInfo: data,
+    });
+  };
+
+  // Handler for AcademicInfoStep component
+  const handleAcademicInfoChange = (data) => {
+    setFormData({
+      ...formData,
+      academicInfo: data,
+    });
   };
 
   const handleCheckboxChange = (field) => (event) => {
@@ -161,8 +190,22 @@ function HealthInsuranceTerminate() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <PersonalInfoForm formData={formData.personalInfo} handleInputChange={handlePersonalInfoChange} />;
+        return (
+          <PersonalInfoStep
+            formData={formData.personalInfo}
+            onChange={handlePersonalInfoChange}
+            onValidationChange={setPersonalInfoValid}
+          />
+        );
       case 1:
+        return (
+          <AcademicInfoStep
+            formData={formData.academicInfo}
+            onChange={handleAcademicInfoChange}
+            onValidationChange={setAcademicInfoValid}
+          />
+        );
+      case 2:
         return (
           <Box>
             <Typography variant="h6" gutterBottom align="center">

@@ -88,7 +88,6 @@ const handleMeritSuccessSubmit = async (formData) => {
     previousGPA: parseFloat(formData.specificInfo?.previousGPA) || null,
   };
 
-  console.log("Sending Merit Success data:", JSON.stringify(requestData, null, 2));
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/merit`, requestData);
 };
 
@@ -106,7 +105,6 @@ const handleFirstYearSubmit = async (formData) => {
     secondExamGrade: parseFloat(formData.specificInfo?.secondSubjectGrade) || null,
   };
 
-  console.log("Sending First Year data:", JSON.stringify(requestData, null, 2));
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/firstyear`, requestData);
 };
 
@@ -121,7 +119,6 @@ const handleForeignStudentSubmit = async (formData) => {
     countryOfOrigin: formData.specificInfo?.countryOfOrigin || "",
   };
 
-  console.log("Sending Foreign Student data:", JSON.stringify(requestData, null, 2));
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/foreign`, requestData);
 };
 
@@ -137,7 +134,6 @@ const handleSocialPreferentialSubmit = async (formData) => {
     hasMarriage: formData.specificInfo?.hasMarriage || false,
   };
 
-  console.log("Sending Social/Preferential data:", JSON.stringify(requestData, null, 2));
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/social`, requestData);
 };
 
@@ -148,7 +144,6 @@ const handleSpecialAchievementSubmit = async (formData) => {
     achievementTopic: formData.specificInfo?.achievementTopic || "",
   };
 
-  console.log("Sending Achievement data:", JSON.stringify(requestData, null, 2));
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/achievement`, requestData);
 };
 
@@ -172,10 +167,6 @@ const handleMeritWithIncomeSubmit = async (formData) => {
       return null;
     }
   };
-
-  // Debug logging - see what we're working with
-  console.log("FormData for meritincome submission:", formData);
-  console.log("Income info specifically:", formData.incomeInfo);
 
   const requestData = {
     personalAcademicInfo: buildPersonalAcademicInfo(formData),
@@ -226,7 +217,6 @@ const handleMeritWithIncomeSubmit = async (formData) => {
     monthlyIncomePerMember: parseIncome(formData.specificInfo?.monthlyIncome),
   };
 
-  console.log("Sending Merit with Income data:", JSON.stringify(requestData, null, 2));
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/meritincome`, requestData);
 };
 

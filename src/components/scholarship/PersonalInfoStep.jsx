@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Grid, TextField, Typography, Box, Paper, Divider } from "@mui/material";
 
-export default function PersonalInfoStep({ formData = {}, onChange }) {
+export default function PersonalInfoStep({ formData = {}, onChange, onValidationChange }) {
   // State to track validation errors
   const [errors, setErrors] = useState({
     streetNumber: "",
@@ -36,6 +36,28 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
     }
     return "";
   };
+
+  // Validate the entire form and return if it's valid
+  const validateForm = () => {
+    // Required fields that must have a value
+    const requiredFields = ["firstName", "lastName", "egn", "phone", "email", "city", "street", "streetNumber"];
+
+    // Check if any required field is missing
+    const missingRequired = requiredFields.some((field) => !formData[field]);
+
+    // Check if there are any validation errors
+    const hasValidationErrors = Object.values(errors).some((error) => error !== "");
+
+    // Form is valid if no required fields are missing and there are no validation errors
+    return !missingRequired && !hasValidationErrors;
+  };
+
+  // Notify parent component about validation status whenever form data or errors change
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(validateForm());
+    }
+  }, [formData, errors]);
 
   const handleChange = (field, value) => {
     let errorMessage = "";
@@ -89,6 +111,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Име"
                 value={formData.firstName || ""}
                 onChange={(e) => handleChange("firstName", e.target.value)}
+                error={!formData.firstName}
+                helperText={!formData.firstName && "Името е задължително"}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -106,6 +130,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Фамилия"
                 value={formData.lastName || ""}
                 onChange={(e) => handleChange("lastName", e.target.value)}
+                error={!formData.lastName}
+                helperText={!formData.lastName && "Фамилията е задължителна"}
               />
             </Grid>
           </Grid>
@@ -124,8 +150,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="ЕГН"
                 value={formData.egn || ""}
                 onChange={(e) => handleChange("egn", e.target.value)}
-                error={!!errors.egn}
-                helperText={errors.egn}
+                error={!!errors.egn || !formData.egn}
+                helperText={errors.egn || (!formData.egn && "ЕГН е задължително")}
                 inputProps={{ maxLength: 10 }}
               />
             </Grid>
@@ -137,6 +163,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 type="email"
                 value={formData.email || ""}
                 onChange={(e) => handleChange("email", e.target.value)}
+                error={!formData.email}
+                helperText={!formData.email && "Email е задължителен"}
               />
             </Grid>
             <Grid item xs={12} sm={4}>
@@ -146,8 +174,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Телефон"
                 value={formData.phone || ""}
                 onChange={(e) => handleChange("phone", e.target.value)}
-                error={!!errors.phone}
-                helperText={errors.phone}
+                error={!!errors.phone || !formData.phone}
+                helperText={errors.phone || (!formData.phone && "Телефон е задължителен")}
                 inputProps={{ maxLength: 10 }}
               />
             </Grid>
@@ -167,6 +195,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Населено място"
                 value={formData.city || ""}
                 onChange={(e) => handleChange("city", e.target.value)}
+                error={!formData.city}
+                helperText={!formData.city && "Населеното място е задължително"}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -176,6 +206,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Улица"
                 value={formData.street || ""}
                 onChange={(e) => handleChange("street", e.target.value)}
+                error={!formData.street}
+                helperText={!formData.street && "Улицата е задължителна"}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
@@ -185,9 +217,8 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
                 label="Номер"
                 value={formData.streetNumber || ""}
                 onChange={(e) => handleChange("streetNumber", e.target.value)}
-                error={!!errors.streetNumber}
-                helperText={errors.streetNumber}
-                // Optionally restrict input to numbers only
+                error={!!errors.streetNumber || !formData.streetNumber}
+                helperText={errors.streetNumber || (!formData.streetNumber && "Номерът е задължителен")}
                 inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
               />
             </Grid>
@@ -201,23 +232,25 @@ export default function PersonalInfoStep({ formData = {}, onChange }) {
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
+                required
                 fullWidth
                 label="Етаж"
                 value={formData.floor || ""}
                 onChange={(e) => handleChange("floor", e.target.value)}
-                error={!!errors.floor}
-                helperText={errors.floor}
+                error={!!errors.floor || !formData.floor}
+                helperText={errors.floor || (!formData.floor && "Етаж е задължителен")}
                 inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
               />
             </Grid>
             <Grid item xs={12} sm={3}>
               <TextField
+                required
                 fullWidth
                 label="Апартамент"
                 value={formData.apartment || ""}
                 onChange={(e) => handleChange("apartment", e.target.value)}
-                error={!!errors.apartment}
-                helperText={errors.apartment}
+                error={!!errors.apartment || !formData.apartment}
+                helperText={errors.apartment || (!formData.apartment && "Апартамент е задължителен")}
                 inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
               />
             </Grid>

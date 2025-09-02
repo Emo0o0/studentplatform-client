@@ -32,6 +32,9 @@ import { Link as RouterLink } from "react-router-dom";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useAuth } from "../config/AuthContext";
 import { authFetchJson } from "../services/apiUtility";
+import { FACULTY_OPTIONS } from "../constants/dropdownOptions";
+import { DEPARTMENTS } from "../constants/dropdownOptions";
+import { SPECIALTIES } from "../constants/dropdownOptions";
 
 function QueriesPage() {
   const { keycloak } = useAuth();
@@ -68,75 +71,6 @@ function QueriesPage() {
       description: "Среден успех на специалността общо и по курсове",
       filters: ["specialty"],
     },
-  ];
-
-  const faculties = [
-    { label: "Машинно-технологичен факултет", value: "MECHANICAL_TECHNOLOGICAL" },
-    { label: "Електротехнически факултет", value: "ELECTRICAL" },
-    { label: "Корабостроителен факултет", value: "SHIPBUILDING" },
-    { label: "Факултет по изчислителна техника и автоматизация", value: "COMPUTER_AUTOMATION" },
-    { label: "Добруджански технологичен колеж", value: "DOBRUDJA_COLLEGE" },
-    { label: "Колеж в структурата на ТУ-Варна", value: "TU_COLLEGE" },
-  ];
-  const departments = [
-    "Материалознание и технология на материалите",
-    "Технология на машиностроенето и металорежещи машини",
-    "Растениевъдство",
-    "Транспортна Техника и Технологии",
-    "Механика и машинни елементи",
-    "Индустриален мениджмънт",
-
-    "Корабостроене и Корабни машини и механизми",
-    "Корабоводене, управление на транспорта и опазване чистотата на водните пътища",
-    "Екология и опазване на околната среда",
-    "Индустриален дизайн",
-    "Топлотехника",
-
-    "Електроснабдяване и електрообзавеждане",
-    "Електротехника и електротехнологии",
-    "Електроенергетика",
-    "Теоретична и измервателна електротехника",
-    "Социални и правни науки",
-    "Математика и Физика",
-
-    "Автоматизация на производството",
-    "Компютърни науки и технологии",
-    "Електронна техника и микроелектроника",
-    "Комуникационна техника и технологии",
-    "Софтуерни и интернет технологии",
-  ];
-  const specialties = [
-    "АИУКС",
-    "ИТС",
-    "АТ",
-    "А",
-    "ВЕИ",
-    "ЕЕ",
-    "Е",
-    "ЕОК",
-    "ЕСЕО",
-    "ЕТЕТ",
-    "ЗНБА",
-    "ИИ",
-    "ИД",
-    "ИМ",
-    "ИЕ",
-    "ИКТ",
-    "КС",
-    "КТМ",
-    "КСТ",
-    "КММ",
-    "КВ",
-    "КМТ",
-    "ЛВТ",
-    "МТТ",
-    "РМ",
-    "СИТ",
-    "СМ",
-    "СтМ",
-    "ТПИ",
-    "ТИП",
-    "ТТТ",
   ];
 
   const handleExecuteQuery = () => {
@@ -512,7 +446,7 @@ function QueriesPage() {
                       <InputLabel>Факултет</InputLabel>
                       <Select value={faculty} label="Факултет" onChange={(e) => setFaculty(e.target.value)}>
                         <MenuItem value="">Всички факултети</MenuItem>
-                        {faculties.map((f) => (
+                        {FACULTY_OPTIONS.map((f) => (
                           <MenuItem key={f.value} value={f.value}>
                             {f.label}
                           </MenuItem>
@@ -526,7 +460,7 @@ function QueriesPage() {
                       <InputLabel>Катедра</InputLabel>
                       <Select value={department} label="Катедра" onChange={(e) => setDepartment(e.target.value)}>
                         <MenuItem value="">Всички катедри</MenuItem>
-                        {departments.map((d) => (
+                        {DEPARTMENTS.map((d) => (
                           <MenuItem key={d} value={d}>
                             {d}
                           </MenuItem>
@@ -540,7 +474,7 @@ function QueriesPage() {
                       <InputLabel>Специалност</InputLabel>
                       <Select value={specialty} label="Специалност" onChange={(e) => setSpecialty(e.target.value)}>
                         <MenuItem value="">Всички специалности</MenuItem>
-                        {specialties.map((s) => (
+                        {SPECIALTIES.map((s) => (
                           <MenuItem key={s} value={s}>
                             {s}
                           </MenuItem>

@@ -51,6 +51,9 @@ function Scholarship() {
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [personalInfoValid, setPersonalInfoValid] = useState(false);
+  const [academicInfoValid, setAcademicInfoValid] = useState(false);
+  const [successStepValid, setSuccessStepValid] = useState(false);
 
   const validateStep = (currentStep) => {
     setError("");
@@ -63,31 +66,23 @@ function Scholarship() {
         }
         break;
       case 1: // Personal Info
-        const requiredPersonalFields = [
-          "firstName",
-          "lastName",
-          "egn",
-          "email",
-          "phone",
-          "city",
-          "street",
-          "streetNumber",
-        ];
-        const missingPersonal = requiredPersonalFields.find((field) => !formData.personalInfo[field]);
-        if (missingPersonal) {
+        if (!personalInfoValid) {
           setError("Моля попълнете всички задължителни полета");
           return false;
         }
         break;
       case 2:
-        const requiredAcademicFields = ["facultyNumber", "faculty", "specialty"];
-        const missingAcademic = requiredAcademicFields.find((field) => !formData.academicInfo[field]);
-        if (missingAcademic) {
+        if (!academicInfoValid) {
           setError("Моля попълнете всички задължителни академични данни");
           return false;
         }
         break;
-      // ...existing validation cases...
+      case 3:
+        if (steps[currentStep] === "Успех" && !successStepValid) {
+          setError("Моля въведете валиден успех между 4.00 и 6.00");
+          return false;
+        }
+        break;
     }
     return true;
   };
@@ -149,9 +144,9 @@ function Scholarship() {
         setSnackbarOpen(true);
         setIsSubmitted(false);
       }
-      // setTimeout(() => {
-      //   navigate("/forms");
-      // }, 2000);
+      setTimeout(() => {
+        navigate("/forms");
+      }, 3000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setError("Възникна проблем при подаване на заявлението. Моля, опитайте отново по-късно.");
@@ -181,6 +176,7 @@ function Scholarship() {
           <PersonalInfoStep
             formData={formData.personalInfo}
             onChange={(data) => setFormData({ ...formData, personalInfo: data })}
+            onValidationChange={setPersonalInfoValid}
           />
         );
       case "Академична информация":
@@ -188,6 +184,7 @@ function Scholarship() {
           <AcademicInfoStep
             formData={formData.academicInfo}
             onChange={(data) => setFormData({ ...formData, academicInfo: data })}
+            onValidationChange={setAcademicInfoValid}
           />
         );
       case "Успех":
@@ -195,6 +192,7 @@ function Scholarship() {
           <MeritSuccessStep
             formData={formData.specificInfo}
             onChange={(data) => setFormData({ ...formData, specificInfo: data })}
+            onValidationChange={setSuccessStepValid}
           />
         );
       case "Доходи":

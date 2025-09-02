@@ -24,7 +24,8 @@ import {
   FormGroup,
 } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
-import PersonalInfoForm from "../components/insurance/PersonalInfoForm";
+import PersonalInfoStep from "../components/scholarship/PersonalInfoStep";
+import AcademicInfoStep from "../components/scholarship/AcademicInfoStep";
 import FamilyMembersForm from "../components/dormitory/FamilyMembersForm";
 import { keepDormitoryRoom, applyForDormitory } from "../services/dormitoryService";
 import { DEGREE_LEVELS } from "../constants/dropdownOptions";
@@ -47,26 +48,13 @@ function DormitoryApply() {
   const [wantsToKeepRoom, setWantsToKeepRoom] = useState(false);
   const [noOwnHousing, setNoOwnHousing] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [personalInfoValid, setPersonalInfoValid] = useState(false);
+  const [academicInfoValid, setAcademicInfoValid] = useState(false);
 
-  // Initialize form data using a function to properly handle the keepRoomData
+  // Updated form data structure to match the components
   const [formData, setFormData] = useState({
-    personalInfo: {
-      fullName: "",
-      course: "",
-      specialty: "",
-      facultyNumber: "",
-      city: "",
-      street: "",
-      block: "",
-      entrance: "",
-      floor: "",
-      apartment: "",
-      egn: "",
-      phone: "",
-      email: "",
-      faculty: "",
-      semester: "",
-    },
+    personalInfo: {},
+    academicInfo: {},
     dormitoryInfo: {
       degreeLevel: "BACHELOR",
       buildingNumber: keepRoomData?.buildingNumber || "",
@@ -123,7 +111,7 @@ function DormitoryApply() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-  const steps = ["Лична информация", "Данни за общежитие", "Семейство"];
+  const steps = ["Лична информация", "Академична информация", "Данни за общежитие", "Семейство"];
 
   const handleInputChange = (section, field, value) => {
     setFormData({
@@ -135,8 +123,20 @@ function DormitoryApply() {
     });
   };
 
-  const handlePersonalInfoChange = (field, value) => {
-    handleInputChange("personalInfo", field, value);
+  // Handler for PersonalInfoStep component
+  const handlePersonalInfoChange = (data) => {
+    setFormData({
+      ...formData,
+      personalInfo: data,
+    });
+  };
+
+  // Handler for AcademicInfoStep component
+  const handleAcademicInfoChange = (data) => {
+    setFormData({
+      ...formData,
+      academicInfo: data,
+    });
   };
 
   const handleDormitoryInfoChange = (field, value) => {
@@ -154,19 +154,27 @@ function DormitoryApply() {
       case 0:
         // Validate personal information
         const personalInfo = formData.personalInfo;
-        if (!personalInfo.fullName || !personalInfo.facultyNumber || !personalInfo.egn) {
+        if (!personalInfoValid) {
           setError("Моля попълнете всички задължителни полета.");
           return false;
         }
         break;
       case 1:
+        // Validate academic information
+        const academicInfo = formData.academicInfo;
+        if (!academicInfoValid) {
+          setError("Моля попълнете всички задължителни академични полета.");
+          return false;
+        }
+        break;
+      case 2:
         const dormitoryInfo = formData.dormitoryInfo;
         if (wantsToKeepRoom && !dormitoryInfo.roomNumber) {
           setError("Моля посочете номер на стая, която искате да запазите.");
           return false;
         }
         break;
-      case 2:
+      case 3:
         // Validate family information if needed
         if (!noOwnHousing) {
           setError(
@@ -214,17 +222,41 @@ function DormitoryApply() {
         keepRoomId = keepRoomResponse.formId;
       }
 
+      // Transform data to match what the API expects
+      const transformedData = {
+        personalInfo: {
+          fullName: `${formData.personalInfo.firstName || ""} ${formData.personalInfo.middleName || ""} ${
+            formData.personalInfo.lastName || ""
+          }`.trim(),
+          course: formData.academicInfo.courseYear || "",
+          specialty: formData.academicInfo.specialty || "",
+          facultyNumber: formData.academicInfo.facultyNumber || "",
+          city: formData.personalInfo.city || "",
+          street: formData.personalInfo.street || "",
+          block: formData.personalInfo.block || "",
+          entrance: formData.personalInfo.entrance || "",
+          floor: formData.personalInfo.floor || "",
+          apartment: formData.personalInfo.apartment || "",
+          egn: formData.personalInfo.egn || "",
+          phone: formData.personalInfo.phone || "",
+          email: formData.personalInfo.email || "",
+          faculty: formData.academicInfo.faculty || "",
+          semester: formData.academicInfo.semester || "",
+        },
+        dormitoryInfo: formData.dormitoryInfo,
+        familyInfo: formData.familyInfo,
+      };
+
       // Submit the main application with the keep room form ID if applicable
-      await applyForDormitory(formData, wantsToKeepRoom ? keepRoomId : null);
+      await applyForDormitory(transformedData, wantsToKeepRoom ? keepRoomId : null);
 
       setSubmitSuccess(true);
       setSnackbarMessage("Заявлението е подадено успешно!");
       setSnackbarOpen(true);
 
-      // Redirect to forms page after successful submission
-      // setTimeout(() => {
-      //   navigate("/forms");
-      // }, 5000);
+      setTimeout(() => {
+        navigate("/forms");
+      }, 3000);
     } catch (error) {
       console.error("Error submitting form:", error);
       setSubmitSuccess(false);
@@ -239,8 +271,22 @@ function DormitoryApply() {
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <PersonalInfoForm formData={formData.personalInfo} handleInputChange={handlePersonalInfoChange} />;
+        return (
+          <PersonalInfoStep
+            formData={formData.personalInfo}
+            onChange={handlePersonalInfoChange}
+            onValidationChange={setPersonalInfoValid}
+          />
+        );
       case 1:
+        return (
+          <AcademicInfoStep
+            formData={formData.academicInfo}
+            onChange={handleAcademicInfoChange}
+            onValidationChange={setAcademicInfoValid}
+          />
+        );
+      case 2:
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
             <TextField label="Учебна година" value={formData.dormitoryInfo.academicYear} disabled fullWidth />
@@ -278,22 +324,6 @@ function DormitoryApply() {
               </Alert>
             )}
 
-            {/* <FormControl fullWidth required>
-              <InputLabel id="degree-level-label">Образователно-квалификационна степен</InputLabel>
-              <Select
-                labelId="degree-level-label"
-                value={formData.dormitoryInfo.degreeLevel}
-                label="Образователно-квалификационна степен"
-                onChange={(e) => handleDormitoryInfoChange("degreeLevel", e.target.value)}
-              >
-                {DEGREE_LEVELS.map((option) => (
-                  <MenuItem key={option.id} value={option.id}>
-                    {option.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-
             {wantsToKeepRoom ? (
               // Show both fields with different labels when "keep room" is checked
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
@@ -317,7 +347,7 @@ function DormitoryApply() {
             ) : null}
           </Box>
         );
-      case 2:
+      case 3:
         return (
           <Box>
             <FamilyMembersForm familyInfo={formData.familyInfo} handleFamilyInfoChange={handleFamilyInfoChange} />

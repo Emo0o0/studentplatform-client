@@ -24,6 +24,8 @@ import {
 import PersonalInfoForm from "../components/insurance/PersonalInfoForm";
 import { applyForHealthInsurance } from "../services/insuranceService";
 import { useNavigate } from "react-router-dom";
+import PersonalInfoStep from "../components/scholarship/PersonalInfoStep";
+import AcademicInfoStep from "../components/scholarship/AcademicInfoStep";
 
 function HealthInsuranceApply() {
   const navigate = useNavigate();
@@ -35,20 +37,9 @@ function HealthInsuranceApply() {
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    personalInfo: {
-      fullName: "",
-      course: "",
-      specialty: "",
-      facultyNumber: "",
-      city: "",
-      street: "",
-      block: "",
-      entrance: "",
-      floor: "",
-      apartment: "",
-      egn: "",
-      phone: "",
-    },
+    // Replace personalInfo structure to match the structure expected by PersonalInfoStep
+    personalInfo: {},
+    academicInfo: {},
     declarationInfo: {
       hasEmploymentIncome: null,
       hasPension: null,
@@ -63,7 +54,10 @@ function HealthInsuranceApply() {
   const [maxVisitedStep, setMaxVisitedStep] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const steps = ["Лична информация", "Декларация"];
+  const [personalInfoValid, setPersonalInfoValid] = useState(false);
+  const [academicInfoValid, setAcademicInfoValid] = useState(false);
+
+  const steps = ["Лична информация", "Академична информация", "Декларация"];
 
   const validateStep = (currentStep) => {
     setError("");
@@ -72,12 +66,20 @@ function HealthInsuranceApply() {
       case 0:
         // Validate personal information
         const personalInfo = formData.personalInfo;
-        if (!personalInfo.fullName || !personalInfo.facultyNumber || !personalInfo.egn) {
+        if (!personalInfoValid) {
           setError("Моля попълнете всички задължителни полета.");
           return false;
         }
         break;
       case 1:
+        // Validate academic information
+        const academicInfo = formData.academicInfo;
+        if (!academicInfoValid) {
+          setError("Моля попълнете всички задължителни академични полета.");
+          return false;
+        }
+        break;
+      case 2:
         // Validate declaration information
         const declarationInfo = formData.declarationInfo;
         if (
@@ -120,7 +122,25 @@ function HealthInsuranceApply() {
 
     setLoading(true);
     try {
-      await applyForHealthInsurance(formData);
+      // Create a transformed version of the data that matches what insuranceService expects
+      const transformedFormData = {
+        personalInfo: {
+          ...formData.personalInfo,
+          // Create fullName from firstName, middleName, and lastName
+          fullName: `${formData.personalInfo.firstName || ""} ${formData.personalInfo.middleName || ""} ${
+            formData.personalInfo.lastName || ""
+          }`.trim(),
+          // Map academic info to personalInfo structure as expected by the service
+          facultyNumber: formData.academicInfo.facultyNumber || "",
+          course: formData.academicInfo.courseYear || "",
+          specialty: formData.academicInfo.specialty || "",
+          faculty: formData.academicInfo.faculty || "",
+        },
+        declarationInfo: formData.declarationInfo,
+      };
+
+      // Pass the transformed data to the service function
+      await applyForHealthInsurance(transformedFormData);
 
       setIsSubmitted(true);
       setSubmitSuccess(true);
@@ -130,7 +150,7 @@ function HealthInsuranceApply() {
       // Redirect to forms page after successful submission
       setTimeout(() => {
         navigate("/forms");
-      }, 5000);
+      }, 3000);
     } catch (error) {
       setIsSubmitted(false);
       console.error("Error submitting form:", error);
@@ -155,15 +175,40 @@ function HealthInsuranceApply() {
   };
 
   // Handler specifically for PersonalInfoForm component
-  const handlePersonalInfoChange = (field, value) => {
-    handleInputChange("personalInfo", field, value);
+  const handlePersonalInfoChange = (data) => {
+    setFormData({
+      ...formData,
+      personalInfo: data,
+    });
+  };
+
+  // Add a new handler for academic info
+  const handleAcademicInfoChange = (data) => {
+    setFormData({
+      ...formData,
+      academicInfo: data,
+    });
   };
 
   const getStepContent = (step) => {
     switch (step) {
       case 0:
-        return <PersonalInfoForm formData={formData.personalInfo} handleInputChange={handlePersonalInfoChange} />;
+        return (
+          <PersonalInfoStep
+            formData={formData.personalInfo}
+            onChange={handlePersonalInfoChange}
+            onValidationChange={setPersonalInfoValid}
+          />
+        );
       case 1:
+        return (
+          <AcademicInfoStep
+            formData={formData.academicInfo}
+            onChange={handleAcademicInfoChange}
+            onValidationChange={setAcademicInfoValid}
+          />
+        );
+      case 2:
         return (
           <Box>
             <Typography variant="h6" gutterBottom align="center">

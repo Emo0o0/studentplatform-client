@@ -1,7 +1,61 @@
 import React from "react";
 import { Paper, Typography, TextField, Grid } from "@mui/material";
+import { useState, useEffect } from "react";
 
-export default function MeritSuccessStep({ formData, onChange }) {
+export default function MeritSuccessStep({ formData, onChange, onValidationChange }) {
+  const [errors, setErrors] = useState({
+    previousGPA: "",
+  });
+
+  const validateGPA = (value) => {
+    // If empty, show required error
+    if (!value) {
+      return "Успехът е задължителен";
+    }
+
+    // Convert to number for comparison
+    const numValue = parseFloat(value);
+
+    // Check if valid number
+    if (isNaN(numValue)) {
+      return "Въведете валидно число";
+    }
+
+    // Check range
+    if (numValue < 2.0 || numValue > 6.0) {
+      return "Успехът трябва да е между 2.00 и 6.00";
+    }
+
+    // Valid
+    return "";
+  };
+
+  const handleGPAChange = (e) => {
+    const value = e.target.value;
+    const errorMessage = validateGPA(value);
+
+    setErrors({
+      ...errors,
+      previousGPA: errorMessage,
+    });
+
+    // Update form data
+    onChange({ ...formData, previousGPA: value });
+  };
+
+  // Validate form and notify parent
+  const validateForm = () => {
+    const isValid = !errors.previousGPA && formData.previousGPA;
+    return isValid;
+  };
+
+  // Update validation status whenever relevant data changes
+  useEffect(() => {
+    if (onValidationChange) {
+      onValidationChange(validateForm());
+    }
+  }, [formData, errors]);
+
   return (
     <Paper sx={{ p: 3 }}>
       <Typography variant="h6" gutterBottom>
@@ -25,8 +79,9 @@ export default function MeritSuccessStep({ formData, onChange }) {
               step: "0.01",
             }}
             value={formData?.previousGPA || ""}
-            onChange={(e) => onChange({ ...formData, previousGPA: e.target.value })}
-            helperText="Въведете успех между 5.00 и 6.00"
+            onChange={handleGPAChange}
+            error={!!errors.previousGPA}
+            helperText={errors.previousGPA || "Въведете успех между 5.00 и 6.00"}
           />
         </Grid>
       </Grid>
