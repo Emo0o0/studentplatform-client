@@ -1,0 +1,69 @@
+import React, { useEffect } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../config/AuthContext";
+import { Box, CircularProgress, Typography, Button } from "@mui/material";
+
+const ProtectedRoute = ({ children }) => {
+  const { authenticated, loading, login } = useAuth();
+
+  // Immediate login redirect if not authenticated and not loading
+  useEffect(() => {
+    // More aggressive approach - redirect immediately if not authenticated
+    if (!loading && !authenticated) {
+      console.log("Not authenticated, redirecting to login immediately");
+      // Store current location before redirecting
+      const currentPath = window.location.pathname;
+      localStorage.setItem("auth_redirect", currentPath);
+
+      // Small delay to allow console logs to appear
+      setTimeout(() => {
+        login();
+      }, 100);
+    }
+  }, [loading, authenticated, login]);
+
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress size={60} />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Зареждане...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // If not authenticated, show a message briefly before redirect occurs
+  if (!authenticated) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "50vh",
+        }}
+      >
+        <CircularProgress size={40} />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Пренасочване към страницата за вход...
+        </Typography>
+      </Box>
+    );
+  }
+
+  // If authenticated, render the protected content
+  return children;
+};
+
+export default ProtectedRoute;

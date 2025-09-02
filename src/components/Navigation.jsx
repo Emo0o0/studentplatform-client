@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
   AppBar,
@@ -13,6 +13,7 @@ import {
   ListItemIcon,
   ListItemText,
   ListItemButton,
+  CircularProgress,
 } from "@mui/material";
 import {
   Menu as MenuIcon,
@@ -23,11 +24,24 @@ import {
   Assignment as AssignmentIcon,
   Analytics as AnalyticsIcon,
 } from "@mui/icons-material";
+import { useAuth } from "../config/AuthContext";
 
 function Navigation() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { authenticated, loading, login, logout, user } = useAuth();
+  // Add this state to force show login button after a timeout
+  const [showLoginButton, setShowLoginButton] = useState(false);
+
+  // Always show the login button after 1 second, even if still loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoginButton(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const menuItems = [
     { text: "Програма", icon: <EventNoteIcon />, path: "/schedule" },
@@ -80,6 +94,36 @@ function Navigation() {
     </Box>
   );
 
+  // Determine what to show in the auth section
+  const renderAuthSection = () => {
+    if (authenticated) {
+      return (
+        <>
+          {user && (
+            <Typography variant="body2" sx={{ mr: 2 }}>
+              {user.name || user.username || "Потребител"}
+            </Typography>
+          )}
+          <Button color="inherit" onClick={logout}>
+            Изход
+          </Button>
+        </>
+      );
+    }
+
+    // If still loading and haven't forced showing the login button yet
+    if (loading && !showLoginButton) {
+      return <CircularProgress color="inherit" size={24} />;
+    }
+
+    // Either not loading or we've forced showing the login button
+    return (
+      <Button color="inherit" onClick={login}>
+        Вход
+      </Button>
+    );
+  };
+
   return (
     <>
       <AppBar position="sticky">
@@ -90,7 +134,8 @@ function Navigation() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Студентско състояние
           </Typography>
-          <Button color="inherit">Login</Button>
+
+          {renderAuthSection()}
         </Toolbar>
       </AppBar>
 

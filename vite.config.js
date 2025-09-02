@@ -4,6 +4,11 @@ import react from "@vitejs/plugin-react";
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./setupTests.js",
+  },
   server: {
     host: true, // allow external access
     cors: true, // enable cross origin
