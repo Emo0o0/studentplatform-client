@@ -72,7 +72,7 @@ function ViewFormsSelection() {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                flex: { xs: "1", sm: "1 1 0px" }, // Equal width on sm and up
+                flex: { xs: "1", sm: "1 1 0px" },
                 transition: "transform 0.2s, box-shadow 0.2s",
                 "&:hover": {
                   transform: "translateY(-4px)",

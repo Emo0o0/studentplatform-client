@@ -111,7 +111,6 @@ function Scholarship() {
   const [maxVisitedStep, setMaxVisitedStep] = useState(0);
 
   const handleStepClick = (stepIndex) => {
-    // Allow navigation up to the highest step reached
     if (stepIndex <= maxVisitedStep) {
       setActiveStep(stepIndex);
     }
@@ -198,7 +197,7 @@ function Scholarship() {
       case "Доходи":
         return (
           <MeritIncomeStep
-            formData={formData} // Pass the entire formData object
+            formData={formData}
             onChange={(updatedFormData) => {
               console.log("MeritIncomeStep onChange called with:", updatedFormData);
               setFormData(updatedFormData);
@@ -263,15 +262,12 @@ function Scholarship() {
         </Typography>
         <Divider sx={{ mb: 4 }} />
 
-        {/* Responsive Stepper */}
         <Box
           sx={{
             overflowX: "auto",
             mb: 4,
-            // Add small padding to prevent focus outline clipping
             px: 0.5,
             py: 1,
-            // Remove scrollbar in most browsers but keep functionality
             "&::-webkit-scrollbar": {
               height: "6px",
             },
@@ -377,7 +373,6 @@ function Scholarship() {
         </Box>
       </Paper>
 
-      {/* Success/Error Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

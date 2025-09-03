@@ -33,7 +33,6 @@ import {
 } from "../constants/dropdownOptions";
 import keycloak from "../config/keycloak";
 
-// TabPanel component for handling tab content
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -57,7 +56,6 @@ function ViewScholarshipForms() {
   const [tabValue, setTabValue] = useState(0);
   const navigate = useNavigate();
 
-  // Get forms by type
   const meritSuccessForms = Array.isArray(forms)
     ? forms.filter((form) => form?.scholarshipType === "MERIT_SUCCESS")
     : [];
@@ -79,10 +77,8 @@ function ViewScholarshipForms() {
     const getScholarshipForms = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual user ID from auth context
         let studentId = null;
         if (keycloak.tokenParsed && keycloak.tokenParsed.name) {
-          // Get the third value from name claim which contains space-separated values
           const nameParts = keycloak.tokenParsed.name.split(" ");
           if (nameParts.length >= 3) {
             studentId = nameParts[2]; // Get third value
@@ -92,7 +88,6 @@ function ViewScholarshipForms() {
 
         if (!studentId) {
           console.warn("Could not extract student ID from token, falling back to default");
-          // You could either use a fallback or show an error
           throw new Error("Неуспешно извличане на студентски номер от токена.");
         }
         const data = await fetchStudentScholarshipForms(studentId);
@@ -112,7 +107,6 @@ function ViewScholarshipForms() {
     setTabValue(newValue);
   };
 
-  // Helper function to render status chip
   const renderStatusChip = (status) => {
     let color = "default";
 
@@ -147,7 +141,6 @@ function ViewScholarshipForms() {
     return <Chip label={statusLabels[status] || status} color={color} size="small" />;
   };
 
-  // Render common form info
   const renderCommonFormInfo = (form) => (
     <Box sx={{ mb: 2 }}>
       <Grid container spacing={2}>
@@ -183,7 +176,6 @@ function ViewScholarshipForms() {
     </Box>
   );
 
-  // Render Merit With Income form details
   const renderMeritWithIncomeDetails = (form) => {
     const meritWithIncome = form.meritWithIncomeScholarship;
     if (!meritWithIncome) return null;
@@ -202,7 +194,6 @@ function ViewScholarshipForms() {
           </Grid>
 
           {meritWithIncome.familyStatus === "MARRIED" ? (
-            // Married info
             <>
               {meritWithIncome.spouseName && (
                 <Grid item xs={12} md={6}>
@@ -234,7 +225,6 @@ function ViewScholarshipForms() {
               )}
             </>
           ) : (
-            // Single info
             <>
               <Grid item xs={12} md={6}>
                 <Typography variant="subtitle2" color="text.secondary">
@@ -377,7 +367,6 @@ function ViewScholarshipForms() {
     );
   };
 
-  // Render Social form details
   const renderSocialDetails = (form) => {
     const social = form.socialScholarship;
     if (!social) return null;
@@ -405,7 +394,6 @@ function ViewScholarshipForms() {
     );
   };
 
-  // Render First Year form details
   const renderFirstYearDetails = (form) => {
     const firstYear = form.firstYearScholarship;
     if (!firstYear) return null;
@@ -439,7 +427,6 @@ function ViewScholarshipForms() {
     );
   };
 
-  // Render Special Achievement form details
   const renderSpecialAchievementDetails = (form) => {
     const specialAchievement = form.specialAchievementScholarship;
     if (!specialAchievement) return null;
@@ -461,7 +448,6 @@ function ViewScholarshipForms() {
     );
   };
 
-  // Render form card
   const renderFormCard = (form) => {
     return (
       <Card variant="outlined" sx={{ mb: 2 }}>
@@ -501,8 +487,7 @@ function ViewScholarshipForms() {
           <Alert severity="error" sx={{ my: 2 }}>
             {error}
           </Alert>
-        ) : // Fix: Add null check to forms
-        !forms || forms.length === 0 ? (
+        ) : !forms || forms.length === 0 ? (
           <Alert severity="info" sx={{ my: 2 }}>
             Нямате изпратени формуляри за стипендии.
           </Alert>

@@ -1,10 +1,6 @@
 import { API_BASE_URL } from "../config/constants";
 import { authGet } from "./apiUtility";
-/**
- * Fetches insurance forms for applying for the current year
- * @param {number} studentId - The student's ID
- * @returns {Promise<Object>} - The insurance forms data
- */
+
 export const fetchInsuranceApplyForms = async (studentId) => {
   try {
     return await authGet(`${API_BASE_URL}/form/healthInsurance/apply?studentId=${studentId}`);
@@ -14,11 +10,6 @@ export const fetchInsuranceApplyForms = async (studentId) => {
   }
 };
 
-/**
- * Fetches insurance forms for applying for previous years
- * @param {number} studentId - The student's ID
- * @returns {Promise<Object>} - The insurance forms data
- */
 export const fetchInsuranceLateforms = async (studentId) => {
   try {
     return await authGet(`${API_BASE_URL}/form/healthInsurance/late?studentId=${studentId}`);
@@ -28,11 +19,6 @@ export const fetchInsuranceLateforms = async (studentId) => {
   }
 };
 
-/**
- * Fetches insurance termination forms
- * @param {number} studentId - The student's ID
- * @returns {Promise<Object>} - The insurance forms data
- */
 export const fetchInsuranceTerminateForms = async (studentId) => {
   try {
     return await authGet(`${API_BASE_URL}/form/healthInsurance/terminate?studentId=${studentId}`);

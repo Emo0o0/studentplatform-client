@@ -76,16 +76,14 @@ function AdminInsuranceForms() {
   });
   const [tabValue, setTabValue] = useState(0);
 
-  // Approval dialog states
   const [approvalDialog, setApprovalDialog] = useState({
     open: false,
     formId: null,
-    formType: null, // 'apply', 'late', or 'terminate'
-    action: null, // 'approve' or 'reject'
+    formType: null,
+    action: null,
     studentName: "",
   });
 
-  // Approval processing state
   const [processingApproval, setProcessingApproval] = useState(false);
 
   useEffect(() => {
@@ -93,7 +91,6 @@ function AdminInsuranceForms() {
       try {
         setLoading(true);
 
-        // Fetch all three types of forms separately
         const [applyData, lateData, terminateData] = await Promise.all([
           fetchAdminInsuranceApplyForms(filters.specialty),
           fetchAdminInsuranceLateForms(filters.specialty),
@@ -109,7 +106,6 @@ function AdminInsuranceForms() {
 
         setForms(formsByType);
 
-        // Initialize filtered forms with all forms
         const allForms = [
           ...formsByType.apply.map((form) => ({ ...form, formType: "apply" })),
           ...formsByType.late.map((form) => ({ ...form, formType: "late" })),
@@ -128,12 +124,10 @@ function AdminInsuranceForms() {
     getInsuranceForms();
   }, [filters.specialty]);
 
-  // Rest of the component remains the same...
   useEffect(() => {
     applyFilters();
   }, [filters, forms, tabValue]);
 
-  // Format date string to a more readable format
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -150,14 +144,12 @@ function AdminInsuranceForms() {
   };
 
   const applyFilters = () => {
-    // Start with all forms
     let allForms = [
       ...forms.apply.map((form) => ({ ...form, formType: "apply" })),
       ...forms.late.map((form) => ({ ...form, formType: "late" })),
       ...forms.terminate.map((form) => ({ ...form, formType: "terminate" })),
     ];
 
-    // Filter by form type based on tab
     if (tabValue === 1) {
       allForms = allForms.filter((form) => form.formType === "apply");
     } else if (tabValue === 2) {
@@ -166,17 +158,14 @@ function AdminInsuranceForms() {
       allForms = allForms.filter((form) => form.formType === "terminate");
     }
 
-    // Filter by status
     if (filters.status) {
       allForms = allForms.filter((form) => form.formStatus === filters.status);
     }
 
-    // Filter by form type (from dropdown)
     if (filters.formType && tabValue === 0) {
       allForms = allForms.filter((form) => form.formType === filters.formType);
     }
 
-    // Filter by search term
     if (filters.searchTerm) {
       const searchLower = filters.searchTerm.toLowerCase();
       allForms = allForms.filter(
@@ -260,7 +249,6 @@ function AdminInsuranceForms() {
 
       await updateInsuranceFormStatus(formId, formType, newStatus);
 
-      // Update local state
       const updatedForms = { ...forms };
       if (formType === "apply") {
         updatedForms.apply = updatedForms.apply.map((form) =>
@@ -288,7 +276,6 @@ function AdminInsuranceForms() {
     }
   };
 
-  // Function to get form type name in Bulgarian
   const getFormTypeName = (type) => {
     const types = {
       apply: "Текущ период",
@@ -298,7 +285,6 @@ function AdminInsuranceForms() {
     return types[type] || type;
   };
 
-  // Get insurer name
   const getInsurerName = (insurer) => {
     const insurers = {
       TU: "Технически университет",
@@ -308,7 +294,6 @@ function AdminInsuranceForms() {
     return insurers[insurer] || insurer;
   };
 
-  // Function to render status chip
   const renderStatusChip = (status) => {
     let color = "default";
 
@@ -343,7 +328,6 @@ function AdminInsuranceForms() {
     return <Chip label={statusLabels[status] || status} color={color} size="small" />;
   };
 
-  // Render apply form details
   const renderApplyFormDetails = (form) => (
     <Grid container spacing={2}>
       <Grid item xs={12} md={4}>
@@ -373,7 +357,6 @@ function AdminInsuranceForms() {
     </Grid>
   );
 
-  // Render late form details
   const renderLateFormDetails = (form) => (
     <Grid container spacing={2}>
       <Grid item xs={12} md={6}>
@@ -385,7 +368,6 @@ function AdminInsuranceForms() {
     </Grid>
   );
 
-  // Render terminate form details
   const renderTerminateFormDetails = (form) => (
     <Grid container spacing={2}>
       <Grid item xs={12}>
@@ -397,7 +379,6 @@ function AdminInsuranceForms() {
     </Grid>
   );
 
-  // Render form details based on type
   const renderFormDetails = (form) => {
     switch (form.formType) {
       case "apply":
@@ -411,7 +392,6 @@ function AdminInsuranceForms() {
     }
   };
 
-  // Count forms by status
   const countFormsByStatus = (status) => {
     return filteredForms.filter((form) => form.formStatus === status).length;
   };

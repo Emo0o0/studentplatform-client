@@ -79,14 +79,12 @@ function QueriesPage() {
     const fetchData = async () => {
       try {
         const queryParams = new URLSearchParams();
-        // Only add parameters that are relevant for the current query
         if (currentQuery.filters.includes("faculty") && faculty) queryParams.append("faculty", faculty);
         if (currentQuery.filters.includes("department") && department) queryParams.append("department", department);
         if (currentQuery.filters.includes("specialty") && specialty) queryParams.append("specialty", specialty);
 
         const data = await authFetchJson(`http://localhost:8080/query/${selectedQuery}?${queryParams}`);
 
-        // Extract the actual array from the response based on the query type
         if (data.studentStats && selectedQuery === "studentStats") {
           setResults(data.studentStats);
         } else if (data.subjectStats && selectedQuery === "subjectStats") {
@@ -96,12 +94,10 @@ function QueriesPage() {
         } else if (data.specialtyAverages && selectedQuery === "specialtyAverages") {
           setResults(data.specialtyAverages);
         } else {
-          // If the response structure doesn't match any known pattern, just use the data as is
           setResults(data);
         }
       } catch (error) {
         console.error("Error fetching query results:", error);
-        // Handle error appropriately
       } finally {
         setLoading(false);
       }
@@ -384,8 +380,6 @@ function QueriesPage() {
   const getCurrentQuery = () => queries.find((q) => q.id === selectedQuery);
   const currentQuery = getCurrentQuery();
 
-  // ...existing code...
-
   return (
     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
       <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
@@ -394,7 +388,6 @@ function QueriesPage() {
           Справки и статистики
         </Typography>
 
-        {/* Add this button for admins to review forms */}
         <Button
           component={RouterLink}
           to="/admin/forms"
@@ -424,7 +417,7 @@ function QueriesPage() {
                       label="Тип заявка"
                       onChange={(e) => {
                         setSelectedQuery(e.target.value);
-                        setResults(null); // Clear previous results
+                        setResults(null);
                       }}
                     >
                       {queries.map((query) => (

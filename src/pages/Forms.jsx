@@ -76,7 +76,7 @@ function Forms() {
       title: "Общежития",
       description: "Кандидатствайте за настаняване в студентски общежития и проверете възможностите за настаняване.",
       icon: <HomeIcon fontSize="large" color="primary" />,
-      path: "/dormitory-apply", // Now points directly to the main dormitory form
+      path: "/dormitory-apply",
       onClick: null,
     },
   ];
@@ -121,7 +121,7 @@ function Forms() {
               sx={{
                 display: "flex",
                 flexDirection: "column",
-                flex: { xs: "1", sm: "1 1 0px" }, // Equal width on sm and up
+                flex: { xs: "1", sm: "1 1 0px" },
                 transition: "transform 0.2s, box-shadow 0.2s",
                 "&:hover": {
                   transform: "translateY(-4px)",
@@ -173,7 +173,6 @@ function Forms() {
         </Box>
       </Paper>
 
-      {/* Health Insurance Options Dialog */}
       <Dialog open={healthDialogOpen} onClose={handleCloseHealthDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Изберете тип здравно осигуряване</DialogTitle>
         <DialogContent>

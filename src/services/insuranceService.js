@@ -37,10 +37,8 @@ const mapFormDataToApplyRequest = (formData) => {
   const nameParts = personalInfo.fullName.trim().split(" ");
   const firstName = nameParts[0] || "";
   const lastName = nameParts[nameParts.length - 1] || "";
-  // Join middle names if they exist
   const secondName = nameParts.length > 2 ? nameParts.slice(1, nameParts.length - 1).join(" ") : "";
 
-  // Extract address components
   const streetName = personalInfo.street || "";
   const streetNumber = personalInfo.block ? parseInt(personalInfo.block, 10) || null : null;
   const entrance = personalInfo.entrance || "";
@@ -49,7 +47,7 @@ const mapFormDataToApplyRequest = (formData) => {
 
   return {
     personalAcademicInfo: {
-      email: "", // Add email if available in form
+      email: "",
       firstName,
       secondName,
       lastName,
@@ -66,7 +64,6 @@ const mapFormDataToApplyRequest = (formData) => {
       courseYear: personalInfo.course || "",
       specialty: personalInfo.specialty || "",
       faculty: personalInfo.faculty || "",
-      // The following fields might need to be added to the form or retrieved from user profile
       semester: "",
       degreeLevel: "",
       studentGroup: null,
@@ -80,17 +77,13 @@ const mapFormDataToApplyRequest = (formData) => {
 };
 
 const mapFormDataToPreviousApplyRequest = (formData) => {
-  // Extract personal info
   const { personalInfo, previousYearInfo } = formData;
 
-  // Parse name into components (assuming format: "First Middle Last")
   const nameParts = personalInfo.fullName.trim().split(" ");
   const firstName = nameParts[0] || "";
   const lastName = nameParts[nameParts.length - 1] || "";
-  // Join middle names if they exist
   const secondName = nameParts.length > 2 ? nameParts.slice(1, nameParts.length - 1).join(" ") : "";
 
-  // Extract address components
   const streetName = personalInfo.street || "";
   const streetNumber = personalInfo.block ? parseInt(personalInfo.block, 10) || null : null;
   const entrance = personalInfo.entrance || "";
@@ -116,23 +109,18 @@ const mapFormDataToPreviousApplyRequest = (formData) => {
       specialty: personalInfo.specialty || "",
       faculty: personalInfo.faculty || "",
     },
-    // For previous period, these are false by default because user declares they didn't receive these incomes
     schoolYear: previousYearInfo?.academicYear || "",
   };
 };
 
 const mapFormDataToTerminateRequest = (formData) => {
-  // Extract personal info
   const { personalInfo, previousYearInfo } = formData;
 
-  // Parse name into components (assuming format: "First Middle Last")
   const nameParts = personalInfo.fullName.trim().split(" ");
   const firstName = nameParts[0] || "";
   const lastName = nameParts[nameParts.length - 1] || "";
-  // Join middle names if they exist
   const secondName = nameParts.length > 2 ? nameParts.slice(1, nameParts.length - 1).join(" ") : "";
 
-  // Extract address components
   const streetName = personalInfo.street || "";
   const streetNumber = personalInfo.block ? parseInt(personalInfo.block, 10) || null : null;
   const entrance = personalInfo.entrance || "";
@@ -164,7 +152,6 @@ const mapFormDataToTerminateRequest = (formData) => {
       specialty: personalInfo.specialty || "",
       faculty: personalInfo.faculty || "",
     },
-    // For previous period, these are false by default because user declares they didn't receive these incomes
     schoolYear: formattedDate,
     terminationReason: formData.terminationInfo?.terminationReason || "",
   };

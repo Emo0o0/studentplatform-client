@@ -36,10 +36,8 @@ function ViewDormitoryForms() {
       try {
         setLoading(true);
 
-        // Extract student ID from JWT token
         let studentId = null;
         if (keycloak.tokenParsed && keycloak.tokenParsed.name) {
-          // Get the third value from name claim which contains space-separated values
           const nameParts = keycloak.tokenParsed.name.split(" ");
           if (nameParts.length >= 3) {
             studentId = nameParts[2]; // Get third value
@@ -49,11 +47,9 @@ function ViewDormitoryForms() {
 
         if (!studentId) {
           console.warn("Could not extract student ID from token, falling back to default");
-          // You could either use a fallback or show an error
           throw new Error("Неуспешно извличане на студентски номер от токена.");
         }
 
-        // Pass the extracted student ID to your service
         const data = await fetchStudentDormitoryForms(studentId);
         setForms(data.forms || []);
       } catch (err) {
@@ -67,7 +63,6 @@ function ViewDormitoryForms() {
     getDormitoryForms();
   }, [keycloak.tokenParsed]);
 
-  // Format date string to a more readable format
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -83,7 +78,6 @@ function ViewDormitoryForms() {
     }
   };
 
-  // Helper function to render status chip
   const renderStatusChip = (status) => {
     let color = "default";
 
@@ -118,7 +112,6 @@ function ViewDormitoryForms() {
     return <Chip label={statusLabels[status] || status} color={color} size="small" />;
   };
 
-  // Get relation name in Bulgarian
   const getFamilyRelationName = (relation) => {
     const relations = {
       FATHER: "Баща",
@@ -132,7 +125,6 @@ function ViewDormitoryForms() {
     return relations[relation] || relation;
   };
 
-  // Format birth date
   const formatBirthDate = (dateString) => {
     if (!dateString) return "-";
 
@@ -148,7 +140,6 @@ function ViewDormitoryForms() {
     }
   };
 
-  // Render family members table
   const renderFamilyMembersTable = (familyMembers) => {
     if (!familyMembers || familyMembers.length === 0) {
       return (
@@ -186,7 +177,6 @@ function ViewDormitoryForms() {
     );
   };
 
-  // Render keep room info
   const renderKeepRoomInfo = (form) => {
     if (!form.hasKeepRoomForm) {
       return null;
@@ -217,7 +207,6 @@ function ViewDormitoryForms() {
     );
   };
 
-  // Render dormitory form card
   const renderDormitoryFormCard = (form) => {
     return (
       <Card variant="outlined" sx={{ mb: 2 }}>

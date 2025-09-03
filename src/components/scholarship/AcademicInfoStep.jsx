@@ -11,7 +11,6 @@ import {
 } from "../../constants/dropdownOptions";
 
 export default function AcademicInfoStep({ formData = {}, onChange, onValidationChange }) {
-  // Define required fields
   const requiredFields = [
     "facultyNumber",
     "specialty",
@@ -23,20 +22,14 @@ export default function AcademicInfoStep({ formData = {}, onChange, onValidation
     "subGroup",
   ];
 
-  // Optional fields that are not required but still part of the form
-  // const optionalFields = ["studentGroup", "subGroup"];
-
   const handleChange = (field, value) => {
     onChange({ ...formData, [field]: value });
   };
 
-  // Validate the entire form and return if it's valid
   const validateForm = () => {
-    // Check if all required fields have values
     return requiredFields.every((field) => !!formData[field]);
   };
 
-  // Notify parent component about validation status whenever form data changes
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(validateForm());
@@ -181,7 +174,6 @@ export default function AcademicInfoStep({ formData = {}, onChange, onValidation
           </Grid>
         </Grid>
 
-        {/* Group Info - These are optional fields */}
         <Grid item xs={12}>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>

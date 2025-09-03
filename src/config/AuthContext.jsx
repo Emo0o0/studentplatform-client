@@ -9,9 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const isInitializing = useRef(false);
 
-  // Add a timeout to prevent infinite loading state
   useEffect(() => {
-    // Set a timeout to force-end loading state after 5 seconds
     const timeoutId = setTimeout(() => {
       if (loading) {
         console.log("Auth check timed out, assuming not authenticated");
@@ -23,13 +21,11 @@ export const AuthProvider = ({ children }) => {
   }, [loading]);
 
   useEffect(() => {
-    // Prevent multiple initialization attempts
     if (isInitializing.current) return;
 
     isInitializing.current = true;
     console.log("Initializing Keycloak...");
 
-    // Initialize with shorter timeout
     keycloak
       .init({
         onLoad: "check-sso",
@@ -37,7 +33,7 @@ export const AuthProvider = ({ children }) => {
         pkceMethod: "S256",
         enableLogging: true,
         checkLoginIframe: false,
-        silentCheckSsoFallback: false, // Don't show login screen if silent check fails
+        silentCheckSsoFallback: false,
         responseMode: "fragment",
         flow: "standard",
       })
@@ -62,7 +58,6 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = () => {
-    // Save current path for redirect after login
     const currentPath = window.location.pathname;
     if (currentPath !== "/" && currentPath !== "/login") {
       localStorage.setItem("auth_redirect", currentPath);

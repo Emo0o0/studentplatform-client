@@ -6,15 +6,12 @@ import { Box, CircularProgress, Typography, Button } from "@mui/material";
 const ProtectedRoute = ({ children }) => {
   const { authenticated, loading, login } = useAuth();
 
-  // Immediate login redirect if not authenticated and not loading
   useEffect(() => {
     if (!loading && !authenticated) {
       console.log("Not authenticated, redirecting to login immediately");
-      // Store current location before redirecting
       const currentPath = window.location.pathname;
       localStorage.setItem("auth_redirect", currentPath);
 
-      // Small delay to allow console logs to appear
       setTimeout(() => {
         login();
       }, 100);

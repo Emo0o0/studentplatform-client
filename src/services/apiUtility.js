@@ -1,11 +1,5 @@
 import keycloak from "../config/keycloak";
 
-/**
- * Authenticated fetch utility that handles token refresh automatically
- * @param {string} url - The URL to fetch
- * @param {Object} options - Fetch options (method, headers, body, etc)
- * @returns {Promise<Response>} - Fetch response
- */
 export const authFetch = async (url, options = {}) => {
   try {
     await keycloak.updateToken(30);
@@ -27,12 +21,6 @@ export const authFetch = async (url, options = {}) => {
   return fetch(url, authOptions);
 };
 
-/**
- * Authenticated JSON fetch utility that handles token refresh and JSON parsing
- * @param {string} url - The URL to fetch
- * @param {Object} options - Fetch options (method, headers, body, etc)
- * @returns {Promise<any>} - Parsed JSON response
- */
 export const authFetchJson = async (url, options = {}) => {
   const response = await authFetch(url, options);
 
@@ -41,24 +29,15 @@ export const authFetchJson = async (url, options = {}) => {
     throw new Error(`API Error (${response.status}): ${errorText || response.statusText}`);
   }
 
-  return await response.json(); // Make sure to await the json() call
+  return await response.json();
 };
 
-/**
- * Authenticated GET request that returns parsed JSON
- */
 export const authGet = async (url, options = {}) => {
-  // Added async
-  return await authFetchJson(url, { ...options, method: "GET" }); // Added await
+  return await authFetchJson(url, { ...options, method: "GET" });
 };
 
-/**
- * Authenticated POST request that sends and returns JSON
- */
 export const authPost = async (url, data, options = {}) => {
-  // Added async
   return await authFetchJson(url, {
-    // Added await
     ...options,
     method: "POST",
     body: JSON.stringify(data),
@@ -69,16 +48,11 @@ export const authPost = async (url, data, options = {}) => {
   });
 };
 
-/**
- * Authenticated PUT request that sends and returns JSON
- */
 export const authPut = async (url, data = {}, options = {}) => {
-  // Added async and default empty object for data
   return await authFetchJson(url, {
-    // Added await
     ...options,
     method: "PUT",
-    body: data ? JSON.stringify(data) : undefined, // Only stringify if data exists
+    body: data ? JSON.stringify(data) : undefined,
     headers: {
       ...options.headers,
       "Content-Type": "application/json",
@@ -86,10 +60,6 @@ export const authPut = async (url, data = {}, options = {}) => {
   });
 };
 
-/**
- * Authenticated DELETE request
- */
 export const authDelete = async (url, options = {}) => {
-  // Added async
-  return await authFetch(url, { ...options, method: "DELETE" }); // Added await
+  return await authFetch(url, { ...options, method: "DELETE" });
 };

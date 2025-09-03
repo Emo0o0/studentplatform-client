@@ -25,7 +25,6 @@ import {
 } from "../services/viewInsuranceFormsService";
 import keycloak from "./../config/keycloak";
 
-// TabPanel component for handling tab content
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -89,10 +88,8 @@ function ViewInsuranceForms() {
     const getInsuranceForms = async () => {
       try {
         setLoading(true);
-        // TODO: Replace with actual user ID from auth context
         let studentId = null;
         if (keycloak.tokenParsed && keycloak.tokenParsed.name) {
-          // Get the third value from name claim which contains space-separated values
           const nameParts = keycloak.tokenParsed.name.split(" ");
           if (nameParts.length >= 3) {
             studentId = nameParts[2]; // Get third value
@@ -102,11 +99,9 @@ function ViewInsuranceForms() {
 
         if (!studentId) {
           console.warn("Could not extract student ID from token, falling back to default");
-          // You could either use a fallback or show an error
           throw new Error("Неуспешно извличане на студентски номер от токена.");
         }
 
-        // Fetch all types of forms in parallel
         const [applyData, lateData, terminateData] = await Promise.all([
           fetchInsuranceApplyForms(studentId),
           fetchInsuranceLateforms(studentId),
@@ -131,7 +126,6 @@ function ViewInsuranceForms() {
     setTabValue(newValue);
   };
 
-  // Format date string to a more readable format
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -147,7 +141,6 @@ function ViewInsuranceForms() {
     }
   };
 
-  // Get insurer name
   const getInsurerName = (insurer) => {
     const insurers = {
       TU: "Технически университет",
@@ -157,7 +150,6 @@ function ViewInsuranceForms() {
     return insurers[insurer] || insurer;
   };
 
-  // Render apply form card
   const renderApplyFormCard = (form) => {
     return (
       <Card variant="outlined" sx={{ mb: 2 }}>
@@ -223,7 +215,6 @@ function ViewInsuranceForms() {
     );
   };
 
-  // Render late form card
   const renderLateFormCard = (form) => {
     return (
       <Card variant="outlined" sx={{ mb: 2 }}>
@@ -270,7 +261,6 @@ function ViewInsuranceForms() {
     );
   };
 
-  // Render terminate form card
   const renderTerminateFormCard = (form) => {
     return (
       <Card variant="outlined" sx={{ mb: 2 }}>
@@ -317,7 +307,6 @@ function ViewInsuranceForms() {
     );
   };
 
-  // Calculate the total number of forms
   const totalFormsCount = (applyForms?.length || 0) + (lateForms?.length || 0) + (terminateForms?.length || 0);
 
   return (

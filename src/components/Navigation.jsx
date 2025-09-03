@@ -83,9 +83,7 @@ function Navigation() {
     </Box>
   );
 
-  // Updated auth section rendering logic
   const renderAuthSection = () => {
-    // If authenticated, show user info and logout
     if (authenticated) {
       return (
         <>
@@ -101,13 +99,10 @@ function Navigation() {
       );
     }
 
-    // If loading AND authenticated is confirmed false, show login button
-    // This ensures we only show spinner when we're genuinely uncertain about auth state
     if (loading && authenticated !== false) {
       return <CircularProgress color="inherit" size={24} />;
     }
 
-    // Not authenticated, show login button
     return (
       <Button color="inherit" onClick={login}>
         Вход

@@ -37,7 +37,6 @@ function HealthInsuranceApply() {
   const [activeStep, setActiveStep] = useState(0);
   const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    // Replace personalInfo structure to match the structure expected by PersonalInfoStep
     personalInfo: {},
     academicInfo: {},
     declarationInfo: {
@@ -64,7 +63,6 @@ function HealthInsuranceApply() {
 
     switch (currentStep) {
       case 0:
-        // Validate personal information
         const personalInfo = formData.personalInfo;
         if (!personalInfoValid) {
           setError("Моля попълнете всички задължителни полета.");
@@ -72,7 +70,6 @@ function HealthInsuranceApply() {
         }
         break;
       case 1:
-        // Validate academic information
         const academicInfo = formData.academicInfo;
         if (!academicInfoValid) {
           setError("Моля попълнете всички задължителни академични полета.");
@@ -80,7 +77,6 @@ function HealthInsuranceApply() {
         }
         break;
       case 2:
-        // Validate declaration information
         const declarationInfo = formData.declarationInfo;
         if (
           declarationInfo.hasEmploymentIncome === null ||
@@ -103,7 +99,6 @@ function HealthInsuranceApply() {
   };
 
   const handleStepClick = (stepIndex) => {
-    // Allow navigation up to the highest step reached
     if (stepIndex <= maxVisitedStep) {
       setActiveStep(stepIndex);
     }
@@ -122,15 +117,12 @@ function HealthInsuranceApply() {
 
     setLoading(true);
     try {
-      // Create a transformed version of the data that matches what insuranceService expects
       const transformedFormData = {
         personalInfo: {
           ...formData.personalInfo,
-          // Create fullName from firstName, middleName, and lastName
           fullName: `${formData.personalInfo.firstName || ""} ${formData.personalInfo.middleName || ""} ${
             formData.personalInfo.lastName || ""
           }`.trim(),
-          // Map academic info to personalInfo structure as expected by the service
           facultyNumber: formData.academicInfo.facultyNumber || "",
           course: formData.academicInfo.courseYear || "",
           specialty: formData.academicInfo.specialty || "",
@@ -139,7 +131,6 @@ function HealthInsuranceApply() {
         declarationInfo: formData.declarationInfo,
       };
 
-      // Pass the transformed data to the service function
       await applyForHealthInsurance(transformedFormData);
 
       setIsSubmitted(true);
@@ -147,7 +138,6 @@ function HealthInsuranceApply() {
       setSnackbarMessage("Декларацията е подадена успешно!");
       setSnackbarOpen(true);
 
-      // Redirect to forms page after successful submission
       setTimeout(() => {
         navigate("/forms");
       }, 3000);
@@ -174,7 +164,6 @@ function HealthInsuranceApply() {
     });
   };
 
-  // Handler specifically for PersonalInfoForm component
   const handlePersonalInfoChange = (data) => {
     setFormData({
       ...formData,
@@ -182,7 +171,6 @@ function HealthInsuranceApply() {
     });
   };
 
-  // Add a new handler for academic info
   const handleAcademicInfoChange = (data) => {
     setFormData({
       ...formData,
@@ -343,7 +331,6 @@ function HealthInsuranceApply() {
         </Typography>
         <Divider sx={{ mb: 4 }} />
 
-        {/* Responsive Stepper */}
         <Box
           sx={{
             overflowX: "auto",
@@ -455,7 +442,6 @@ function HealthInsuranceApply() {
         </Box>
       </Paper>
 
-      {/* Success/Error Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

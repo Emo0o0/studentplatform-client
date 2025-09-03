@@ -67,7 +67,6 @@ function AdminDormitoryForms() {
   });
   const [tabValue, setTabValue] = useState(0);
 
-  // Approval dialog states
   const [approvalDialog, setApprovalDialog] = useState({
     open: false,
     formId: null,
@@ -75,7 +74,6 @@ function AdminDormitoryForms() {
     studentName: "",
   });
 
-  // Approval processing state
   const [processingApproval, setProcessingApproval] = useState(false);
 
   useEffect(() => {
@@ -100,7 +98,6 @@ function AdminDormitoryForms() {
     applyFilters();
   }, [filters, forms, tabValue]);
 
-  // Format date string to a more readable format
   const formatDate = (dateString) => {
     try {
       const date = new Date(dateString);
@@ -226,7 +223,6 @@ function AdminDormitoryForms() {
 
       await updateDormitoryFormStatus(formId, newStatus);
 
-      // Update local state to reflect the change
       setForms(forms.map((form) => (form.formId === formId ? { ...form, formStatus: newStatus } : form)));
 
       handleDialogClose();
@@ -275,7 +271,6 @@ function AdminDormitoryForms() {
     return <Chip label={statusLabels[status] || status} color={color} size="small" />;
   };
 
-  // Get relation name in Bulgarian
   const getFamilyRelationName = (relation) => {
     const relations = {
       FATHER: "Баща",
@@ -289,7 +284,6 @@ function AdminDormitoryForms() {
     return relations[relation] || relation;
   };
 
-  // Format birth date
   const formatBirthDate = (dateString) => {
     if (!dateString) return "-";
 
@@ -305,7 +299,6 @@ function AdminDormitoryForms() {
     }
   };
 
-  // Render family members list
   const renderFamilyMembers = (familyMembers) => {
     if (!familyMembers || familyMembers.length === 0) {
       return <Typography variant="body2">Няма добавени членове на семейството</Typography>;
@@ -368,7 +361,6 @@ function AdminDormitoryForms() {
     );
   };
 
-  // Render keep room info
   const renderKeepRoomInfo = (form) => {
     if (!form.hasKeepRoomForm) {
       return null;
@@ -399,7 +391,6 @@ function AdminDormitoryForms() {
     );
   };
 
-  // Count forms by status
   const countFormsByStatus = (status) => {
     return forms.filter((form) => form.formStatus === status).length;
   };
@@ -695,7 +686,6 @@ function AdminDormitoryForms() {
         </Paper>
       </Paper>
 
-      {/* Approval/Rejection Dialog */}
       <Dialog open={approvalDialog.open} onClose={!processingApproval ? handleDialogClose : undefined}>
         <DialogTitle>{approvalDialog.action === "approve" ? "Одобряване" : "Отхвърляне"} на формуляр</DialogTitle>
         <DialogContent>

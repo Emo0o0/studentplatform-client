@@ -61,7 +61,6 @@ function HealthInsurancePrevious() {
 
     switch (currentStep) {
       case 0:
-        // Validate personal information
         const personalInfo = formData.personalInfo;
         if (!personalInfoValid) {
           setError("Моля попълнете всички задължителни полета.");
@@ -69,7 +68,6 @@ function HealthInsurancePrevious() {
         }
         break;
       case 1:
-        // Validate academic information
         const academicInfo = formData.academicInfo;
         if (!academicInfoValid) {
           setError("Моля попълнете всички задължителни академични полета.");
@@ -77,7 +75,6 @@ function HealthInsurancePrevious() {
         }
         break;
       case 2:
-        // Validate previous year information
         const previousYearInfo = formData.previousYearInfo;
         if (!previousYearInfo.academicYear) {
           setError("Моля посочете академичната година, за която се отнася декларацията.");
@@ -95,7 +92,6 @@ function HealthInsurancePrevious() {
   };
 
   const handleStepClick = (stepIndex) => {
-    // Allow navigation up to the highest step reached
     if (stepIndex <= maxVisitedStep) {
       setActiveStep(stepIndex);
     }
@@ -114,15 +110,12 @@ function HealthInsurancePrevious() {
 
     setLoading(true);
     try {
-      // Transform data to match the format expected by the service
       const transformedFormData = {
         personalInfo: {
           ...formData.personalInfo,
-          // Create fullName from firstName, middleName, and lastName
           fullName: `${formData.personalInfo.firstName || ""} ${formData.personalInfo.middleName || ""} ${
             formData.personalInfo.lastName || ""
           }`.trim(),
-          // Map academic info to personalInfo structure as expected by the service
           facultyNumber: formData.academicInfo.facultyNumber || "",
           course: formData.academicInfo.courseYear || "",
           specialty: formData.academicInfo.specialty || "",
@@ -163,7 +156,6 @@ function HealthInsurancePrevious() {
     });
   };
 
-  // Handler for PersonalInfoStep component
   const handlePersonalInfoChange = (data) => {
     setFormData({
       ...formData,
@@ -171,7 +163,6 @@ function HealthInsurancePrevious() {
     });
   };
 
-  // Handler for AcademicInfoStep component
   const handleAcademicInfoChange = (data) => {
     setFormData({
       ...formData,
@@ -316,7 +307,6 @@ function HealthInsurancePrevious() {
         </Typography>
         <Divider sx={{ mb: 4 }} />
 
-        {/* Responsive Stepper */}
         <Box
           sx={{
             overflowX: "auto",
@@ -428,7 +418,6 @@ function HealthInsurancePrevious() {
         </Box>
       </Paper>
 
-      {/* Success/Error Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

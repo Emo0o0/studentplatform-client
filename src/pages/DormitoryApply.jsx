@@ -51,7 +51,6 @@ function DormitoryApply() {
   const [personalInfoValid, setPersonalInfoValid] = useState(false);
   const [academicInfoValid, setAcademicInfoValid] = useState(false);
 
-  // Updated form data structure to match the components
   const [formData, setFormData] = useState({
     personalInfo: {},
     academicInfo: {},
@@ -71,7 +70,6 @@ function DormitoryApply() {
     },
   });
 
-  // Update form data if keepRoomData changes
   useEffect(() => {
     if (keepRoomData) {
       setFormData((prevState) => ({
@@ -84,21 +82,17 @@ function DormitoryApply() {
         },
       }));
 
-      // If we have keepRoomData, the user wants to keep their room
       setWantsToKeepRoom(true);
     }
   }, [keepRoomData]);
 
   useEffect(() => {
-    // If user unchecks the "want to keep room" option, clear both room and building number
-    // if they were previously populated from keepRoomData
     if (!wantsToKeepRoom && keepRoomData) {
       setFormData((prevState) => ({
         ...prevState,
         dormitoryInfo: {
           ...prevState.dormitoryInfo,
-          roomNumber: "", // Always clear room number
-          // Only clear building number if it came from keepRoomData (preserve user input)
+          roomNumber: "",
           buildingNumber:
             keepRoomData.buildingNumber === prevState.dormitoryInfo.buildingNumber
               ? ""
@@ -123,7 +117,6 @@ function DormitoryApply() {
     });
   };
 
-  // Handler for PersonalInfoStep component
   const handlePersonalInfoChange = (data) => {
     setFormData({
       ...formData,
@@ -131,7 +124,6 @@ function DormitoryApply() {
     });
   };
 
-  // Handler for AcademicInfoStep component
   const handleAcademicInfoChange = (data) => {
     setFormData({
       ...formData,
@@ -160,7 +152,6 @@ function DormitoryApply() {
         }
         break;
       case 1:
-        // Validate academic information
         const academicInfo = formData.academicInfo;
         if (!academicInfoValid) {
           setError("Моля попълнете всички задължителни академични полета.");
@@ -175,7 +166,6 @@ function DormitoryApply() {
         }
         break;
       case 3:
-        // Validate family information if needed
         if (!noOwnHousing) {
           setError(
             "Моля потвърдете, че вие или член от семейството ви НЕ ПРИТЕЖАВА собствено годно за обитаване жилище."
@@ -190,7 +180,6 @@ function DormitoryApply() {
   };
 
   const handleStepClick = (stepIndex) => {
-    // Allow navigation up to the highest step reached
     if (stepIndex <= maxVisitedStep) {
       setActiveStep(stepIndex);
     }
@@ -212,7 +201,6 @@ function DormitoryApply() {
       let keepRoomId = keepRoomFormId;
       setIsSubmitted(true);
 
-      // Submit keep room request if user wants to keep their room and we don't already have an ID
       if (wantsToKeepRoom && !keepRoomId) {
         const keepRoomResponse = await keepDormitoryRoom({
           buildingNumber: formData.dormitoryInfo.buildingNumber,
@@ -222,7 +210,6 @@ function DormitoryApply() {
         keepRoomId = keepRoomResponse.formId;
       }
 
-      // Transform data to match what the API expects
       const transformedData = {
         personalInfo: {
           fullName: `${formData.personalInfo.firstName || ""} ${formData.personalInfo.middleName || ""} ${
@@ -247,7 +234,6 @@ function DormitoryApply() {
         familyInfo: formData.familyInfo,
       };
 
-      // Submit the main application with the keep room form ID if applicable
       await applyForDormitory(transformedData, wantsToKeepRoom ? keepRoomId : null);
 
       setSubmitSuccess(true);
@@ -299,7 +285,6 @@ function DormitoryApply() {
                     const isChecked = e.target.checked;
                     setWantsToKeepRoom(isChecked);
 
-                    // If checked and keepRoomData exists, restore those values
                     if (isChecked && keepRoomData) {
                       setFormData((prevState) => ({
                         ...prevState,
@@ -325,7 +310,6 @@ function DormitoryApply() {
             )}
 
             {wantsToKeepRoom ? (
-              // Show both fields with different labels when "keep room" is checked
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                 <TextField
                   required
@@ -392,7 +376,6 @@ function DormitoryApply() {
         </Typography>
         <Divider sx={{ mb: 4 }} />
 
-        {/* Responsive Stepper */}
         <Box
           sx={{
             overflowX: "auto",
@@ -504,7 +487,6 @@ function DormitoryApply() {
         </Box>
       </Paper>
 
-      {/* Success/Error Snackbar */}
       <Snackbar
         open={snackbarOpen}
         autoHideDuration={6000}

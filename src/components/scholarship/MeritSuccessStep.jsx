@@ -8,25 +8,20 @@ export default function MeritSuccessStep({ formData, onChange, onValidationChang
   });
 
   const validateGPA = (value) => {
-    // If empty, show required error
     if (!value) {
       return "Успехът е задължителен";
     }
 
-    // Convert to number for comparison
     const numValue = parseFloat(value);
 
-    // Check if valid number
     if (isNaN(numValue)) {
       return "Въведете валидно число";
     }
 
-    // Check range
     if (numValue < 2.0 || numValue > 6.0) {
       return "Успехът трябва да е между 2.00 и 6.00";
     }
 
-    // Valid
     return "";
   };
 
@@ -39,17 +34,14 @@ export default function MeritSuccessStep({ formData, onChange, onValidationChang
       previousGPA: errorMessage,
     });
 
-    // Update form data
     onChange({ ...formData, previousGPA: value });
   };
 
-  // Validate form and notify parent
   const validateForm = () => {
     const isValid = !errors.previousGPA && formData.previousGPA;
     return isValid;
   };
 
-  // Update validation status whenever relevant data changes
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(validateForm());

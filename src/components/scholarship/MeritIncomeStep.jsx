@@ -32,7 +32,6 @@ const incomeFields = [
 ];
 
 export default function MeritIncomeStep({ formData, onChange }) {
-  // Initialize formData.specificInfo and formData.incomeInfo if they don't exist
   useEffect(() => {
     if (!formData.specificInfo || !formData.incomeInfo) {
       onChange({
@@ -43,7 +42,6 @@ export default function MeritIncomeStep({ formData, onChange }) {
     }
   }, []);
 
-  // Handle changes to specificInfo fields
   const handleSpecificInfoChange = (field, value) => {
     onChange({
       ...formData,
@@ -54,7 +52,6 @@ export default function MeritIncomeStep({ formData, onChange }) {
     });
   };
 
-  // Handle changes to incomeInfo fields
   const handleIncomeInfoChange = (field, value) => {
     onChange({
       ...formData,
@@ -65,7 +62,6 @@ export default function MeritIncomeStep({ formData, onChange }) {
     });
   };
 
-  // Children handlers
   const addChild = () => {
     const children = [...(formData.incomeInfo?.children || [])];
     children.push({ fullName: "", birthDate: "" });
@@ -78,7 +74,6 @@ export default function MeritIncomeStep({ formData, onChange }) {
     handleIncomeInfoChange("children", children);
   };
 
-  // Siblings handlers
   const addSibling = () => {
     const siblings = [...(formData.incomeInfo?.siblings || [])];
     siblings.push({ fullName: "", educationStatus: "" });
@@ -91,7 +86,6 @@ export default function MeritIncomeStep({ formData, onChange }) {
     handleIncomeInfoChange("siblings", siblings);
   };
 
-  // Calculate totals for FamilyIncomeInfo
   const totalIncome = useMemo(() => {
     let sum = 0;
     incomeFields.forEach((field) => {
@@ -101,12 +95,10 @@ export default function MeritIncomeStep({ formData, onChange }) {
     return Math.round(sum * 100) / 100;
   }, [formData.incomeInfo]);
 
-  // Calculate family member count
   const getFamilyMemberCount = () => {
-    let count = 1; // The student
-
+    let count = 1;
     if (formData.specificInfo?.familyStatus === "MARRIED") {
-      count += 1; // Spouse
+      count += 1;
       count += (formData.incomeInfo?.children || []).length; // Children
     } else if (formData.specificInfo?.familyStatus === "SINGLE") {
       if (formData.incomeInfo?.fatherName) count += 1; // Father
@@ -117,7 +109,6 @@ export default function MeritIncomeStep({ formData, onChange }) {
     return count;
   };
 
-  // Update calculated values when income changes
   useEffect(() => {
     const memberCount = getFamilyMemberCount();
     const monthlyPerMember = memberCount > 0 ? Math.round((totalIncome / memberCount) * 100) / 100 : 0;

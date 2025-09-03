@@ -67,7 +67,6 @@ function AdminScholarshipForms() {
   });
   const [tabValue, setTabValue] = useState(0);
 
-  // Approval dialog states
   const [approvalDialog, setApprovalDialog] = useState({
     open: false,
     formId: null,
@@ -75,7 +74,6 @@ function AdminScholarshipForms() {
     studentName: "",
   });
 
-  // Approval processing state
   const [processingApproval, setProcessingApproval] = useState(false);
 
   useEffect(() => {
@@ -103,7 +101,6 @@ function AdminScholarshipForms() {
   const applyFilters = () => {
     let result = [...forms];
 
-    // Filter by status based on tab
     if (tabValue === 1) {
       result = result.filter((form) => form.formStatus === "SENT");
     } else if (tabValue === 2) {
@@ -116,7 +113,6 @@ function AdminScholarshipForms() {
       result = result.filter((form) => form.formStatus === "RETURNED");
     }
 
-    // Apply custom filters
     if (filters.specialty) {
       result = result.filter((form) => form.specialty === filters.specialty);
     }
@@ -209,7 +205,6 @@ function AdminScholarshipForms() {
 
       await updateScholarshipFormStatus(formId, newStatus);
 
-      // Update local state to reflect the change
       setForms(forms.map((form) => (form.formId === formId ? { ...form, formStatus: newStatus } : form)));
 
       handleDialogClose();
@@ -223,7 +218,6 @@ function AdminScholarshipForms() {
     }
   };
 
-  // Function to get scholarship type name in Bulgarian
   const getScholarshipTypeName = (type) => {
     const types = {
       MERIT_SUCCESS: "За успех",
@@ -236,7 +230,6 @@ function AdminScholarshipForms() {
     return types[type] || type;
   };
 
-  // Function to render status chip
   const renderStatusChip = (status) => {
     let color = "default";
 
@@ -271,7 +264,6 @@ function AdminScholarshipForms() {
     return <Chip label={statusLabels[status] || status} color={color} size="small" />;
   };
 
-  // Format common form data
   const renderCommonFormInfo = (form) => (
     <Grid container spacing={2}>
       <Grid item xs={12} md={4}>
@@ -303,7 +295,6 @@ function AdminScholarshipForms() {
     </Grid>
   );
 
-  // Render details based on scholarship type
   const renderScholarshipTypeDetails = (form) => {
     switch (form.scholarshipType) {
       case "MERIT_WITH_INCOME":
@@ -317,7 +308,6 @@ function AdminScholarshipForms() {
     }
   };
 
-  // Render Merit With Income form details
   const renderMeritWithIncomeDetails = (form) => {
     const meritWithIncome = form.meritWithIncomeScholarship;
     if (!meritWithIncome) return null;
@@ -349,7 +339,6 @@ function AdminScholarshipForms() {
     );
   };
 
-  // Render First Year form details
   const renderFirstYearDetails = (form) => {
     const firstYear = form.firstYearScholarship;
     if (!firstYear) return null;
@@ -383,7 +372,6 @@ function AdminScholarshipForms() {
     );
   };
 
-  // Render Special Achievement form details
   const renderSpecialAchievementDetails = (form) => {
     const specialAchievement = form.specialAchievementScholarship;
     if (!specialAchievement) return null;
@@ -676,7 +664,6 @@ function AdminScholarshipForms() {
         </Paper>
       </Paper>
 
-      {/* Approval/Rejection Dialog */}
       <Dialog open={approvalDialog.open} onClose={!processingApproval ? handleDialogClose : undefined}>
         <DialogTitle>{approvalDialog.action === "approve" ? "Одобряване" : "Отхвърляне"} на формуляр</DialogTitle>
         <DialogContent>

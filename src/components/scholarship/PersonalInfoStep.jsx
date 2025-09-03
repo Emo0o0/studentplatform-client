@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Grid, TextField, Typography, Box, Paper, Divider } from "@mui/material";
 
 export default function PersonalInfoStep({ formData = {}, onChange, onValidationChange }) {
-  // State to track validation errors
   const [errors, setErrors] = useState({
     streetNumber: "",
     floor: "",
@@ -12,9 +11,8 @@ export default function PersonalInfoStep({ formData = {}, onChange, onValidation
   });
 
   const validateNumber = (value, fieldName) => {
-    if (value === "") return ""; // Empty is allowed for optional fields
+    if (value === "") return "";
 
-    // Check if the input is a valid number
     if (!/^\d+$/.test(value)) {
       return "Трябва да е число";
     }
@@ -37,22 +35,16 @@ export default function PersonalInfoStep({ formData = {}, onChange, onValidation
     return "";
   };
 
-  // Validate the entire form and return if it's valid
   const validateForm = () => {
-    // Required fields that must have a value
     const requiredFields = ["firstName", "lastName", "egn", "phone", "email", "city", "street", "streetNumber"];
 
-    // Check if any required field is missing
     const missingRequired = requiredFields.some((field) => !formData[field]);
 
-    // Check if there are any validation errors
     const hasValidationErrors = Object.values(errors).some((error) => error !== "");
 
-    // Form is valid if no required fields are missing and there are no validation errors
     return !missingRequired && !hasValidationErrors;
   };
 
-  // Notify parent component about validation status whenever form data or errors change
   useEffect(() => {
     if (onValidationChange) {
       onValidationChange(validateForm());
@@ -62,7 +54,6 @@ export default function PersonalInfoStep({ formData = {}, onChange, onValidation
   const handleChange = (field, value) => {
     let errorMessage = "";
 
-    // Validate based on field type
     switch (field) {
       case "streetNumber":
         errorMessage = validateNumber(value, "streetNumber");
@@ -81,13 +72,11 @@ export default function PersonalInfoStep({ formData = {}, onChange, onValidation
         break;
     }
 
-    // Update errors
     setErrors((prev) => ({
       ...prev,
       [field]: errorMessage,
     }));
 
-    // Update form data
     onChange({ ...formData, [field]: value });
   };
 

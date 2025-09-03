@@ -1,4 +1,3 @@
-// Update the import and route for HealthInsuranceTerminate
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
@@ -7,7 +6,6 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./config/AuthContext";
-// Import pages
 import WeeklySchedule from "./pages/WeeklySchedule.jsx";
 import Curriculum from "./pages/Curriculum";
 import Grades from "./pages/Grades";
@@ -29,15 +27,12 @@ import AdminScholarshipForms from "./pages/AdminScholarshipForms.jsx";
 import AdminInsuranceForms from "./pages/AdminInsuranceForms.jsx";
 import AdminDormitoryForms from "./pages/AdminDormitoryForms.jsx";
 
-// Import components
 import Navigation from "./components/Navigation";
 
-// Update HomePage component
 const HomePage = () => {
   const { authenticated, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Handle redirect after login
   useEffect(() => {
     if (authenticated && !loading) {
       const redirectPath = localStorage.getItem("auth_redirect");

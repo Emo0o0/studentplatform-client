@@ -1,13 +1,8 @@
 import { API_BASE_URL } from "../config/constants";
 import { authPost } from "./apiUtility";
 
-/**
- * Submit handler for scholarships
- * Routes to the appropriate handler based on scholarship type
- */
 export const handleScholarshipSubmit = async (formData) => {
   try {
-    // Choose the appropriate submission handler based on scholarship type
     switch (formData.scholarshipType) {
       case "MERIT_SUCCESS":
         return await handleMeritSuccessSubmit(formData);
@@ -36,9 +31,6 @@ export const handleScholarshipSubmit = async (formData) => {
   }
 };
 
-/**
- * Build common personal and academic info object used in all requests
- */
 const buildPersonalAcademicInfo = (formData) => {
   return {
     // Personal info
@@ -67,9 +59,6 @@ const buildPersonalAcademicInfo = (formData) => {
   };
 };
 
-/**
- * Build common banking info object used in all requests
- */
 const buildBankingInfo = (formData) => {
   return {
     bankName: formData.bankInfo?.bankName || "",
@@ -77,9 +66,6 @@ const buildBankingInfo = (formData) => {
   };
 };
 
-/**
- * Submit handler specifically for Merit Success scholarship
- */
 const handleMeritSuccessSubmit = async (formData) => {
   const requestData = {
     personalAcademicInfo: buildPersonalAcademicInfo(formData),
@@ -91,9 +77,6 @@ const handleMeritSuccessSubmit = async (formData) => {
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/merit`, requestData);
 };
 
-/**
- * Submit handler specifically for First Year scholarship
- */
 const handleFirstYearSubmit = async (formData) => {
   const requestData = {
     personalAcademicInfo: buildPersonalAcademicInfo(formData),
@@ -108,9 +91,6 @@ const handleFirstYearSubmit = async (formData) => {
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/firstyear`, requestData);
 };
 
-/**
- * Submit handler for Foreign Student scholarship
- */
 const handleForeignStudentSubmit = async (formData) => {
   const requestData = {
     personalAcademicInfo: buildPersonalAcademicInfo(formData),
@@ -122,9 +102,6 @@ const handleForeignStudentSubmit = async (formData) => {
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/foreign`, requestData);
 };
 
-/**
- * Submit handler for Social/Preferential scholarship
- */
 const handleSocialPreferentialSubmit = async (formData) => {
   const requestData = {
     personalAcademicInfo: buildPersonalAcademicInfo(formData),
@@ -147,17 +124,12 @@ const handleSpecialAchievementSubmit = async (formData) => {
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/achievement`, requestData);
 };
 
-/**
- * Submit handler for Merit with Income scholarship
- */
 const handleMeritWithIncomeSubmit = async (formData) => {
-  // Parse income values with proper fallbacks to zero
   const parseIncome = (value) => {
     const parsed = parseFloat(value);
     return isNaN(parsed) ? 0.0 : parsed;
   };
 
-  // Format dates in the required format (ISO format: YYYY-MM-DD)
   const formatDate = (dateString) => {
     if (!dateString) return null;
     try {
@@ -172,13 +144,10 @@ const handleMeritWithIncomeSubmit = async (formData) => {
     personalAcademicInfo: buildPersonalAcademicInfo(formData),
     bankingInfo: buildBankingInfo(formData),
 
-    // GPA from specific info
     previousGPA: parseFloat(formData.specificInfo?.previousGPA) || null,
 
-    // Family status
     familyStatus: formData.specificInfo?.familyStatus || "",
 
-    // Married family members (if applicable)
     spouseName: formData.incomeInfo?.spouseName || "",
     spouseEmploymentStatus: formData.incomeInfo?.spouseEmploymentStatus || "",
     children: Array.isArray(formData.incomeInfo?.children)
@@ -188,7 +157,6 @@ const handleMeritWithIncomeSubmit = async (formData) => {
         }))
       : [],
 
-    // Single family members (if applicable)
     fatherName: formData.incomeInfo?.fatherName || "",
     fatherStatus: formData.incomeInfo?.fatherStatus || "",
     motherName: formData.incomeInfo?.motherName || "",
@@ -200,7 +168,6 @@ const handleMeritWithIncomeSubmit = async (formData) => {
         }))
       : [],
 
-    // Income fields
     salaries: parseIncome(formData.incomeInfo?.salaries),
     pensions: parseIncome(formData.incomeInfo?.pensions),
     unemploymentBenefits: parseIncome(formData.incomeInfo?.unemploymentBenefits),
@@ -220,9 +187,6 @@ const handleMeritWithIncomeSubmit = async (formData) => {
   return await submitAuthRequest(`${API_BASE_URL}/form/scholarship/meritincome`, requestData);
 };
 
-/**
- * Use authPost to submit requests and format response in a consistent way
- */
 const submitAuthRequest = async (url, requestData) => {
   try {
     const response = await authPost(url, requestData);
